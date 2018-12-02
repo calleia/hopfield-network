@@ -6,4 +6,9 @@ typedef struct Network {
 	float* weights;
 } Network;
 
+typedef struct Pattern {
+	int size;
+	char* data;
+} Pattern;
+
 #endif
