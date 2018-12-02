@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hopfield.h"
+#include "pbm.h"
 
 Network* create_network(Pattern* pPattern) {
 	Network* pNetwork = (Network*) malloc(sizeof(Network));
@@ -13,6 +14,22 @@ Network* create_network(Pattern* pPattern) {
 
 int get_index(int x, int y, Network* pNetwork) {
 	return pNetwork->width * y + x;
+}
+
+Pattern* load_image(char* path) {
+	FILE *pFile = fopen(path, "rb");
+	PBMImage* pImage = loadPBM(pFile);
+	fclose(pFile);
+
+	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
+	pPattern->size = pImage->width * pImage->height;
+	pPattern->data = (char*) malloc(pPattern->size * sizeof(char));
+
+	for (int i = 0; i < pPattern->size; i++) {
+		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
+	}
+
+	return pPattern;
 }
 
 Network* memorize_pattern(Pattern* pPattern) {

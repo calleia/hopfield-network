@@ -13,6 +13,8 @@ typedef struct Pattern {
 
 Network* create_network(Pattern* pPattern);
 
+Pattern* load_image(char* path);
+
 Network* memorize_pattern(Pattern* pPattern);
 
 void print_network(Network* pNetwork);
