@@ -7,7 +7,7 @@ typedef struct Network {
 } Network;
 
 typedef struct Pattern {
-	int size;
+	unsigned long width, height, size;
 	char* data;
 } Pattern;
 
@@ -22,5 +22,7 @@ void print_network(Network* pNetwork);
 void print_pattern(Pattern* pPattern);
 
 Pattern* retrieve_pattern(Pattern* pattern, Network* network);
+
+void save_image(char* path, Pattern* pPattern);
 
 #endif
