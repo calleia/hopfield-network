@@ -11,4 +11,6 @@ typedef struct Pattern {
 	char* data;
 } Pattern;
 
+void print_pattern(Pattern* pPattern);
+
 #endif
