@@ -2,6 +2,15 @@
 #include <stdlib.h>
 #include "hopfield.h"
 
+Network* create_network(Pattern* pPattern) {
+	Network* pNetwork = (Network*) malloc(sizeof(Network));
+	pNetwork->width = pPattern->size;
+	pNetwork->height = pPattern->size;
+	pNetwork->weights = (float*) calloc(pPattern->size * pPattern->size, sizeof(float));
+
+	return pNetwork;
+}
+
 int get_index(int x, int y, Network* pNetwork) {
 	return pNetwork->width * y + x;
 }

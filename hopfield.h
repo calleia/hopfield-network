@@ -11,6 +11,8 @@ typedef struct Pattern {
 	char* data;
 } Pattern;
 
+Network* create_network(Pattern* pPattern);
+
 void print_network(Network* pNetwork);
 
 void print_pattern(Pattern* pPattern);
