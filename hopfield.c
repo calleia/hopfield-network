@@ -45,3 +45,26 @@ void print_pattern(Pattern* pPattern) {
 		fprintf(stdout, "%d\t", pPattern->data[i]);
 	}
 }
+
+int sgn(float input) {
+	return input < 0 ? -1 : 1;
+}
+
+Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
+
+	Pattern* pMemorized_pattern = (Pattern*) malloc(sizeof(Pattern));
+	pMemorized_pattern->size = pattern->size;
+	pMemorized_pattern->data = (char*) malloc(pattern->size * sizeof(char));
+
+	for (int i = 0; i < pattern->size; i++) {
+		float sum = 0;
+
+		for (int j = 0; j < pattern->size; ++j) {
+			sum += network->weights[get_index(i, j, network)] * pattern->data[j];
+		}
+
+		pMemorized_pattern->data[i] = sgn(sum);
+	}
+
+	return pMemorized_pattern;
+}

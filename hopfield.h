@@ -19,4 +19,6 @@ void print_network(Network* pNetwork);
 
 void print_pattern(Pattern* pPattern);
 
+Pattern* retrieve_pattern(Pattern* pattern, Network* network);
+
 #endif
