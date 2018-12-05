@@ -1,8 +1,9 @@
 CC = gcc
 DEPS = pbm.h hopfield.h
+OBJS = main.o pbm.o hopfield.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $<
 
-main: main.o pbm.o hopfield.o
-	$(CC) -o main main.o pbm.o hopfield.o
+main: $(OBJS)
+	$(CC) -o $@ $^
