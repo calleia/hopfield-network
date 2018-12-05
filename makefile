@@ -7,3 +7,8 @@ OBJS = main.o pbm.o hopfield.o
 
 main: $(OBJS)
 	$(CC) -o $@ $^
+
+.PHONY: clean
+
+clean:
+	rm -f main *.o
