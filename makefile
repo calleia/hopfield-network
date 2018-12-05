@@ -1,4 +1,8 @@
 CC = gcc
+DEPS = pbm.h hopfield.h
 
-main: main.c pbm.c hopfield.c
-	$(CC) -o main main.c pbm.c hopfield.c
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $<
+
+main: main.o pbm.o hopfield.o
+	$(CC) -o main main.o pbm.o hopfield.o
