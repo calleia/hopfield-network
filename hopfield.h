@@ -25,4 +25,6 @@ Pattern* retrieve_pattern(Pattern* pattern, Network* network);
 
 void save_image(char* path, Pattern* pPattern);
 
+void save_network(char* path, Network* pNetwork);
+
 #endif

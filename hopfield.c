@@ -81,6 +81,22 @@ void save_image(char* path, Pattern* pPattern) {
 	fclose(pFile);
 }
 
+void save_network(char* path, Network* pNetwork) {
+	FILE* pFile = fopen(path, "w");
+
+	fprintf(pFile, "%lu\n", pNetwork->width);
+
+	for (int i = 0; i < pNetwork->height; i++) {
+		for (int j = 0; j < pNetwork->width; j++) {
+			fprintf(pFile, "%f\t", pNetwork->weights[get_index(i, j, pNetwork)]);
+		}
+
+		fprintf(pFile, "\n");
+	}
+
+	fclose(pFile);
+}
+
 int sgn(float input) {
 	return input < 0 ? -1 : 1;
 }
