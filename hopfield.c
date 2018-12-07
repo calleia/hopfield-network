@@ -34,6 +34,71 @@ Pattern* load_image(char* path) {
 	return pPattern;
 }
 
+Network* load_network(char* path) {
+	Network* pNetwork = (Network*) malloc(sizeof(Network));
+
+	FILE* pFile = fopen(path, "rb");
+
+	char* buffer = (char*) malloc(sizeof(char));
+
+	// Read Size
+	char* size = NULL;
+	size_t sizeLength = 0;
+
+	do {
+		fread(buffer, 1, 1, pFile);
+
+		if (*buffer >= '0' && *buffer <= '9') {
+			sizeLength++;
+			size = (char*) realloc(size, sizeLength + 1);
+			size[sizeLength - 1] = *buffer;
+		}
+	} while (*buffer != '\n');
+
+	// Null terminating string
+	size[sizeLength] = 0;
+
+	pNetwork->width = strtoul(size, NULL, 10);
+	pNetwork->height = pNetwork->width;
+
+	// Read Data
+	float* data = NULL;
+	size_t dataSize = 0;
+
+	char* weight = NULL;
+	size_t weightSize = 0;
+
+	while (fread(buffer, 1, 1, pFile) == 1) {
+
+		if ((*buffer >= '0' && *buffer <= '9') || *buffer == '.' || *buffer == '-') {
+			weightSize++;
+			weight = (char*) realloc(weight, weightSize + 1);
+			weight[weightSize - 1] = *buffer;
+			weight[weightSize] = 0;
+		} else {
+			if (weight == NULL) {
+				continue;
+			}
+
+			dataSize++;
+			data = (float*) realloc(data, dataSize * sizeof(float));
+			data[dataSize - 1] = strtof(weight, NULL);
+
+			free(weight);
+			weight = NULL;
+			weightSize = 0;
+		}
+	}
+
+	fclose(pFile);
+
+	free(buffer);
+
+	pNetwork->weights = data;
+
+	return pNetwork;
+}
+
 Network* memorize_pattern(Pattern* pPattern) {
 	Network* pNetwork = create_network(pPattern);
 
