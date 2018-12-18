@@ -1,8 +1,18 @@
 #include <stdio.h>
+#include <string.h>
 #include <getopt.h>
+#include "hopfield.h"
+
+void memorize(char* input_path, char* output_path) {
+	Pattern* pPattern = load_image(input_path);
+
+	Network* pNetwork = memorize_pattern(pPattern);
+
+	save_network(output_path, pNetwork);
+}
 
 int main(int argc, char** argv) {
-
+	// Options struct
 	static struct option long_options[] = {
 		{"output", required_argument, NULL, 'o'},
 		{NULL, 0, NULL, 0}
@@ -11,6 +21,7 @@ int main(int argc, char** argv) {
 	int option;
 	char* output_filename = "output.file";
 
+	// Parsing options
 	while ((option = getopt_long(argc, argv, "o:", long_options, NULL)) != -1) {
 		switch (option) {
 			case 'o':
@@ -20,6 +31,21 @@ int main(int argc, char** argv) {
 				fprintf(stderr, "Invalid parameter.\n");
 				// TODO: call show_help()
 		}
+	}
+
+	// Remaining args that are not options
+	if (optind < argc) {
+		if (strcmp("memorize", argv[optind]) == 0) {
+			if ((argc - optind) == 2) {
+				memorize(argv[++optind], output_filename);
+			} else {
+				fprintf(stderr, "No input was provided.\n");
+			}
+		} else {
+			fprintf(stderr, "Command '%s' not recognized.\n", argv[optind]);
+		}
+	} else {
+		fprintf(stderr, "No command was provided.\n");
 	}
 
 	return 0;
