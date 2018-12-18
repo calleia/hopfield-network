@@ -11,6 +11,16 @@ void memorize(char* input_path, char* output_path) {
 	save_network(output_path, pNetwork);
 }
 
+void retrieve(char* input_path, char* output_path, char* network_path) {
+	Pattern* pPattern = load_image(input_path);
+
+	Network* pNetwork = load_network(network_path);
+
+	Pattern* pRecovered = retrieve_pattern(pPattern, pNetwork);
+
+	save_image(output_path, pRecovered);
+}
+
 int main(int argc, char** argv) {
 	// Options struct
 	static struct option long_options[] = {
@@ -40,6 +50,12 @@ int main(int argc, char** argv) {
 				memorize(argv[++optind], output_filename);
 			} else {
 				fprintf(stderr, "No input was provided.\n");
+			}
+		} else if (strcmp("retrieve", argv[optind]) == 0) {
+			if ((argc - optind) == 3) {
+				retrieve(argv[optind + 1], output_filename, argv[optind + 2]);
+			} else {
+				fprintf(stderr, "You must provide an input and a network model.\n");
 			}
 		} else {
 			fprintf(stderr, "Command '%s' not recognized.\n", argv[optind]);
