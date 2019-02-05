@@ -13,12 +13,20 @@ void memorize(char* input_path, char* output_path) {
 }
 
 void memorize_many(char** input_paths, char* output_path) {
+	Network* pNetwork = NULL;
+
 	int i = 0;
 
 	while (input_paths[i] != NULL) {
-		fprintf(stdout, "{%s}\n", input_paths[i]);
+		Pattern* pPattern = load_image(input_paths[i]);
+
+		Network* pNewNetwork = memorize_pattern(pPattern);
+		pNetwork = add_networks(pNetwork, pNewNetwork);
+
 		i++;
 	}
+
+	save_network(output_path, pNetwork);
 }
 
 void retrieve(char* input_path, char* output_path, char* network_path) {

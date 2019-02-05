@@ -11,6 +11,8 @@ typedef struct Pattern {
 	char* data;
 } Pattern;
 
+Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork);
+
 Network* create_network(Pattern* pPattern);
 
 Pattern* load_image(char* path);

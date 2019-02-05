@@ -16,6 +16,28 @@ int get_index(int x, int y, Network* pNetwork) {
 	return pNetwork->width * y + x;
 }
 
+Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork) {
+
+	if (pFirstNetwork == NULL && pSecondNetwork != NULL) {
+		return pSecondNetwork;
+	} else if (pFirstNetwork != NULL && pSecondNetwork == NULL) {
+		return pFirstNetwork;
+	}
+	
+	Network* pNetwork = (Network*) malloc(sizeof(Network));
+	pNetwork->width = pFirstNetwork->width;
+	pNetwork->height = pFirstNetwork->height;
+	pNetwork->weights = (float*) calloc(pNetwork->width * pNetwork->height, sizeof(float));
+
+	for (int j = 0; j < pNetwork->height; j++) {
+		for (int i = 0; i < pNetwork->width; i++) {
+			pNetwork->weights[get_index(i, j, pNetwork)] = pFirstNetwork->weights[get_index(i, j, pFirstNetwork)] + pSecondNetwork->weights[get_index(i, j, pSecondNetwork)];
+		}
+	}
+
+	return pNetwork;
+}
+
 Pattern* load_image(char* path) {
 	FILE *pFile = fopen(path, "rb");
 	PBMImage* pImage = loadPBM(pFile);
