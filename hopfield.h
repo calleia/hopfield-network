@@ -1,6 +1,8 @@
 #ifndef HOPFIELD_H_
 #define HOPFIELD_H_
 
+#include "hash.h"
+
 typedef struct Network {
 	unsigned long width, height;
 	float* weights;
@@ -9,6 +11,7 @@ typedef struct Network {
 typedef struct Pattern {
 	unsigned long width, height, size;
 	char* data;
+	Hash signature;
 } Pattern;
 
 Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork);

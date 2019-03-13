@@ -47,11 +47,17 @@ Pattern* load_image(char* path) {
 	pPattern->width = pImage->width;
 	pPattern->height = pImage->height;
 	pPattern->size = pImage->width * pImage->height;
-	pPattern->data = (char*) malloc(pPattern->size * sizeof(char));
+	pPattern->data = (char*) malloc((pPattern->size + 1) * sizeof(char));
 
 	for (int i = 0; i < pPattern->size; i++) {
 		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
 	}
+
+	// Make pPattern->data NULL terminated
+	pPattern->data[pPattern->size] = 0;
+
+	// Calculate hash
+	pPattern->signature = get_hash(pPattern->data, FNV1_32A_INIT);
 
 	return pPattern;
 }
@@ -194,7 +200,7 @@ Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
 	pMemorized_pattern->width = pattern->width;
 	pMemorized_pattern->height = pattern->height;
 	pMemorized_pattern->size = pattern->size;
-	pMemorized_pattern->data = (char*) malloc(pattern->size * sizeof(char));
+	pMemorized_pattern->data = (char*) malloc((pattern->size + 1) * sizeof(char));
 
 	for (int i = 0; i < pattern->size; i++) {
 		float sum = 0;
@@ -205,6 +211,12 @@ Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
 
 		pMemorized_pattern->data[i] = sgn(sum);
 	}
+
+	// Make pPattern->data NULL terminated
+	pMemorized_pattern->data[pattern->size] = 0;
+
+	// Calculate hash
+	pMemorized_pattern->signature = get_hash(pMemorized_pattern->data, FNV1_32A_INIT);
 
 	return pMemorized_pattern;
 }
