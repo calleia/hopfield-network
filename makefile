@@ -9,11 +9,11 @@ $(TEMPDIR)/%.o: %.c $(DEPS)
 	mkdir -p $(@D)
 	$(CC) -c -o $@ $<
 
-main: $(OBJS)
+hopfield: $(OBJS)
 	$(CC) -o $@ $^
 
 .PHONY: clean
 
 clean:
-	rm -f main
+	rm -f hopfield
 	rm -rf $(TEMPDIR)
