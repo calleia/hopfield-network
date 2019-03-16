@@ -195,28 +195,35 @@ int sgn(float input) {
 }
 
 Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
+	int network_update_count = 0;
 
-	Pattern* pMemorized_pattern = (Pattern*) malloc(sizeof(Pattern));
-	pMemorized_pattern->width = pattern->width;
-	pMemorized_pattern->height = pattern->height;
-	pMemorized_pattern->size = pattern->size;
-	pMemorized_pattern->data = (char*) malloc((pattern->size + 1) * sizeof(char));
+	do {
 
-	for (int i = 0; i < pattern->size; i++) {
-		float sum = 0;
+		Hash last_signature = pattern->signature;
 
-		for (int j = 0; j < pattern->size; ++j) {
-			sum += network->weights[get_index(i, j, network)] * pattern->data[j];
+		for (int i = 0; i < pattern->size; i++) {
+			float sum = 0;
+
+			for (int j = 0; j < pattern->size; ++j) {
+				sum += network->weights[get_index(i, j, network)] * pattern->data[j];
+			}
+
+			pattern->data[i] = sgn(sum);
 		}
 
-		pMemorized_pattern->data[i] = sgn(sum);
-	}
+		// Make pPattern->data NULL terminated
+		pattern->data[pattern->size] = 0;
+		
+		// Calculate hash
+		pattern->signature = get_hash(pattern->data, FNV1_32A_INIT);
 
-	// Make pPattern->data NULL terminated
-	pMemorized_pattern->data[pattern->size] = 0;
+		if (pattern->signature != last_signature) {
+			network_update_count = 0;
+		} else {
+			network_update_count++;
+		}
 
-	// Calculate hash
-	pMemorized_pattern->signature = get_hash(pMemorized_pattern->data, FNV1_32A_INIT);
+	} while (network_update_count < MAX_NETWORK_UPDATES);
 
-	return pMemorized_pattern;
+	return pattern;
 }

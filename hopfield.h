@@ -3,6 +3,8 @@
 
 #include "hash.h"
 
+#define MAX_NETWORK_UPDATES 100
+
 typedef struct Network {
 	unsigned long width, height;
 	float* weights;
