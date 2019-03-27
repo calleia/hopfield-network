@@ -182,7 +182,7 @@ void save_network(char* path, Network* pNetwork) {
 	// Just save the lower triangular matrix since the weights are symmetrical between units
 	for (int j = 0; j < pNetwork->height; j++) {
 		for (int i = 0; i <= j; i++) {
-			fprintf(pFile, "%f\t", pNetwork->weights[get_index(i, j, pNetwork)]);
+			fprintf(pFile, "%.6f\t", pNetwork->weights[get_index(i, j, pNetwork)]);
 		}
 
 		fprintf(pFile, "\n");
