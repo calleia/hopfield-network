@@ -90,34 +90,41 @@ Network* load_network(char* path) {
 	pNetwork->height = pNetwork->width;
 
 	// Read Data
-	float* data = NULL;
+	float* data = (float*) malloc(sizeof(float) * pNetwork->height * pNetwork->width);
 	size_t dataSize = 0;
 
-	char* weight = NULL;
+	char* weightString = NULL;
 	size_t weightSize = 0;
 
 	while (fread(buffer, 1, 1, pFile) == 1) {
 
 		if ((*buffer >= '0' && *buffer <= '9') || *buffer == '.' || *buffer == '-') {
 			weightSize++;
-			weight = (char*) realloc(weight, weightSize + 1);
-			weight[weightSize - 1] = *buffer;
-			weight[weightSize] = 0;
+			weightString = (char*) realloc(weightString, weightSize + 1);
+			weightString[weightSize - 1] = *buffer;
+			weightString[weightSize] = 0;
 		} else {
-			if (weight == NULL) {
+			if (weightString == NULL) {
 				continue;
 			}
 
+			size_t index = dataSize;
 			dataSize++;
-			data = (float*) realloc(data, dataSize * sizeof(float));
-			data[dataSize - 1] = strtof(weight, NULL);
 
-			free(weight);
-			weight = NULL;
+			size_t row = floor(-0.5 + sqrt(0.25 + 2 * index));
+			size_t triangularNumber = row * (row + 1) / 2;
+			size_t column = index - triangularNumber;
+
+			float weight = strtof(weightString, NULL);
+			data[get_index(row, column, pNetwork)] = weight;
+			data[get_index(column, row, pNetwork)] = weight;
+
+			free(weightString);
+			weightString = NULL;
 			weightSize = 0;
 		}
 	}
-
+	
 	fclose(pFile);
 
 	free(buffer);
