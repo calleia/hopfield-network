@@ -111,6 +111,8 @@ Network* load_network(char* path) {
 			size_t index = dataSize;
 			dataSize++;
 
+			// Calculate weight indexes (row, column) based on it's position index
+			// SOURCE: https://stackoverflow.com/questions/9674179/getting-the-row-and-column-of-a-triangular-matrix-given-the-index
 			size_t row = floor(-0.5 + sqrt(0.25 + 2 * index));
 			size_t triangularNumber = row * (row + 1) / 2;
 			size_t column = index - triangularNumber;
