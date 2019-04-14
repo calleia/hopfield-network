@@ -20,7 +20,6 @@ int get_index(int x, int y, Network* pNetwork) {
 }
 
 Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork) {
-
 	if (pFirstNetwork == NULL && pSecondNetwork != NULL) {
 		return pSecondNetwork;
 	} else if (pFirstNetwork != NULL && pSecondNetwork == NULL) {
@@ -47,11 +46,13 @@ Pattern* create_pattern(unsigned long width, unsigned long height) {
 	pPattern->height = height;
 	pPattern->data = (char*) malloc(((width * height) + 1) * sizeof(char));
 
+	// Make pPattern->data NULL terminated
+	pPattern->data[width * height] = 0;
+
 	return pPattern;
 }
 
 Pattern* copy_pattern(Pattern* pPattern) {
-
 	Pattern* pCopiedPattern = create_pattern(pPattern->width, pPattern->height);
 	strcpy(pCopiedPattern->data, pPattern->data);
 
@@ -69,13 +70,7 @@ Pattern* load_image(char* path) {
 	for (int i = 0; i < patternSize; i++) {
 		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
 	}
-
-	// Make pPattern->data NULL terminated
-	pPattern->data[patternSize] = 0;
-
-	// Calculate hash
-	pPattern->signature = get_hash(pPattern->data, FNV1_32A_INIT);
-
+	
 	return pPattern;
 }
 
@@ -224,40 +219,25 @@ int sgn(float input) {
 	return input < 0 ? -1 : 1;
 }
 
-Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
-	int network_update_count = 0;
-
-	unsigned long patternSize = pattern->width * pattern->height;
+Pattern* retrieve_pattern(Pattern* pPattern, Network* pNetwork) {
+	Pattern* pLastPattern = NULL;
 
 	do {
+		pLastPattern = copy_pattern(pPattern);
 
-		Hash last_signature = pattern->signature;
-
-		for (int i = 0; i < patternSize; i++) {
+		for (int i = 0; i < pNetwork->width; i++) {
 			float sum = 0;
 
-			for (int j = 0; j < patternSize; ++j) {
-				sum += network->weights[get_index(i, j, network)] * pattern->data[j];
+			for (int j = 0; j < pNetwork->height; j++) {
+				sum += pNetwork->weights[get_index(i, j, pNetwork)] * pPattern->data[j];
 			}
 
-			pattern->data[i] = sgn(sum);
+			pPattern->data[i] = sgn(sum);
 		}
 
-		// Make pPattern->data NULL terminated
-		pattern->data[patternSize] = 0;
-		
-		// Calculate hash
-		pattern->signature = get_hash(pattern->data, FNV1_32A_INIT);
+	} while (compare_patterns(pPattern, pLastPattern) != 0);
 
-		if (pattern->signature != last_signature) {
-			network_update_count = 0;
-		} else {
-			network_update_count++;
-		}
-
-	} while (network_update_count < MAX_NETWORK_UPDATES);
-
-	return pattern;
+	return pPattern;
 }
 
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern) {

@@ -13,7 +13,6 @@ typedef struct Network {
 typedef struct Pattern {
 	unsigned long width, height;
 	char* data;
-	Hash signature;
 } Pattern;
 
 Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork);
@@ -32,7 +31,7 @@ void print_network(Network* pNetwork);
 
 void print_pattern(Pattern* pPattern);
 
-Pattern* retrieve_pattern(Pattern* pattern, Network* network);
+Pattern* retrieve_pattern(Pattern* pPattern, Network* pNetwork);
 
 void save_image(char* path, Pattern* pPattern);
 
