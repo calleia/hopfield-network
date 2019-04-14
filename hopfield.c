@@ -38,16 +38,22 @@ Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork) {
 	return pNetwork;
 }
 
+Pattern* create_pattern(unsigned long width, unsigned long height) {
+	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
+	pPattern->width = width;
+	pPattern->height = height;
+	pPattern->size = width * height;
+	pPattern->data = (char*) malloc(((width * height) + 1) * sizeof(char));
+
+	return pPattern;
+}
+
 Pattern* load_image(char* path) {
 	FILE *pFile = fopen(path, "rb");
 	PBMImage* pImage = loadPBM(pFile);
 	fclose(pFile);
-
-	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
-	pPattern->width = pImage->width;
-	pPattern->height = pImage->height;
-	pPattern->size = pImage->width * pImage->height;
-	pPattern->data = (char*) malloc((pPattern->size + 1) * sizeof(char));
+	
+	Pattern* pPattern = create_pattern(pImage->width, pImage->height);
 
 	for (int i = 0; i < pPattern->size; i++) {
 		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
