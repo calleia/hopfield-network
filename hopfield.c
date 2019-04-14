@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "hopfield.h"
 #include "pbm.h"
 
@@ -47,6 +48,14 @@ Pattern* create_pattern(unsigned long width, unsigned long height) {
 	pPattern->data = (char*) malloc(((width * height) + 1) * sizeof(char));
 
 	return pPattern;
+}
+
+Pattern* copy_pattern(Pattern* pPattern) {
+
+	Pattern* pCopiedPattern = create_pattern(pPattern->width, pPattern->height);
+	strcpy(pCopiedPattern->data, pPattern->data);
+
+	return pCopiedPattern;
 }
 
 Pattern* load_image(char* path) {
