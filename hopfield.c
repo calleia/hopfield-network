@@ -237,3 +237,16 @@ Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
 
 	return pattern;
 }
+
+int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern) {
+	if (pFirstPattern->width != pSecondPattern->width)
+		return 1;
+
+	if (pFirstPattern->height != pSecondPattern->height)
+		return 1;
+
+	if (strcmp(pFirstPattern->data, pSecondPattern->data) != 0)
+		return 1;
+
+	return 0;
+}

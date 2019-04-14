@@ -36,4 +36,6 @@ void save_image(char* path, Pattern* pPattern);
 
 void save_network(char* path, Network* pNetwork);
 
+int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern);
+
 #endif
