@@ -4,10 +4,12 @@
 #include "pbm.h"
 
 Network* create_network(Pattern* pPattern) {
+	unsigned long patternSize = pPattern->width * pPattern->height;
+
 	Network* pNetwork = (Network*) malloc(sizeof(Network));
-	pNetwork->width = pPattern->size;
-	pNetwork->height = pPattern->size;
-	pNetwork->weights = (float*) calloc(pPattern->size * pPattern->size, sizeof(float));
+	pNetwork->width = patternSize;
+	pNetwork->height = patternSize;
+	pNetwork->weights = (float*) calloc(patternSize * patternSize, sizeof(float));
 
 	return pNetwork;
 }
@@ -42,7 +44,6 @@ Pattern* create_pattern(unsigned long width, unsigned long height) {
 	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
 	pPattern->width = width;
 	pPattern->height = height;
-	pPattern->size = width * height;
 	pPattern->data = (char*) malloc(((width * height) + 1) * sizeof(char));
 
 	return pPattern;
@@ -52,15 +53,16 @@ Pattern* load_image(char* path) {
 	FILE *pFile = fopen(path, "rb");
 	PBMImage* pImage = loadPBM(pFile);
 	fclose(pFile);
-	
-	Pattern* pPattern = create_pattern(pImage->width, pImage->height);
 
-	for (int i = 0; i < pPattern->size; i++) {
+	Pattern* pPattern = create_pattern(pImage->width, pImage->height);
+	unsigned long patternSize = pPattern->width * pPattern->height;
+
+	for (int i = 0; i < patternSize; i++) {
 		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
 	}
 
 	// Make pPattern->data NULL terminated
-	pPattern->data[pPattern->size] = 0;
+	pPattern->data[patternSize] = 0;
 
 	// Calculate hash
 	pPattern->signature = get_hash(pPattern->data, FNV1_32A_INIT);
@@ -144,11 +146,12 @@ Network* load_network(char* path) {
 
 Network* memorize_pattern(Pattern* pPattern) {
 	Network* pNetwork = create_network(pPattern);
+	unsigned long patternSize = pPattern->width * pPattern->height;
 
 	for (int i = 0; i < pNetwork->width; i++) {
 		for (int j = 0; j < pNetwork->height; j++) {
 			if (i != j) {
-				pNetwork->weights[get_index(i, j, pNetwork)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
+				pNetwork->weights[get_index(i, j, pNetwork)] = (pPattern->data[i] * pPattern->data[j]) / (float) patternSize;
 			} else {
 				pNetwork->weights[get_index(i, j, pNetwork)] = 0;
 			}
@@ -168,7 +171,9 @@ void print_network(Network* pNetwork) {
 }
 
 void print_pattern(Pattern* pPattern) {
-	for (int i = 0; i < pPattern->size; i++) {
+	unsigned long patternSize = pPattern->width * pPattern->height;
+
+	for (int i = 0; i < patternSize; i++) {
 		fprintf(stdout, "%d\t", pPattern->data[i]);
 	}
 }
@@ -213,14 +218,16 @@ int sgn(float input) {
 Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
 	int network_update_count = 0;
 
+	unsigned long patternSize = pattern->width * pattern->height;
+
 	do {
 
 		Hash last_signature = pattern->signature;
 
-		for (int i = 0; i < pattern->size; i++) {
+		for (int i = 0; i < patternSize; i++) {
 			float sum = 0;
 
-			for (int j = 0; j < pattern->size; ++j) {
+			for (int j = 0; j < patternSize; ++j) {
 				sum += network->weights[get_index(i, j, network)] * pattern->data[j];
 			}
 
@@ -228,7 +235,7 @@ Pattern* retrieve_pattern(Pattern* pattern, Network* network) {
 		}
 
 		// Make pPattern->data NULL terminated
-		pattern->data[pattern->size] = 0;
+		pattern->data[patternSize] = 0;
 		
 		// Calculate hash
 		pattern->signature = get_hash(pattern->data, FNV1_32A_INIT);

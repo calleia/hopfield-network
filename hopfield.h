@@ -11,7 +11,7 @@ typedef struct Network {
 } Network;
 
 typedef struct Pattern {
-	unsigned long width, height, size;
+	unsigned long width, height;
 	char* data;
 	Hash signature;
 } Pattern;
@@ -19,6 +19,8 @@ typedef struct Pattern {
 Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork);
 
 Network* create_network(Pattern* pPattern);
+
+Pattern* create_pattern(unsigned long width, unsigned long height);
 
 Pattern* load_image(char* path);
 
