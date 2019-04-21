@@ -187,9 +187,9 @@ void save_image(char* path, Pattern* pPattern) {
 
 	fprintf(pFile, "P1\n%lu %lu\n", pPattern->width, pPattern->height);
 
-	for (int i = 0; i < pPattern->width; i++) {
-		for (int j = 0; j < pPattern->height; j++) {
-			fprintf(pFile, "%c ", pPattern->data[i * pPattern->width + j] == 1 ? '1' : '0');
+	for (int j = 0; j < pPattern->height; j++) {
+		for (int i = 0; i < pPattern->width; i++) {
+			fprintf(pFile, "%c ", pPattern->data[j * pPattern->height + i] == 1 ? '1' : '0');
 		}
 
 		fprintf(pFile, "\n");
