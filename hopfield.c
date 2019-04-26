@@ -3,6 +3,7 @@
 #include <string.h>
 #include "hopfield.h"
 #include "pbm.h"
+#include "rng.h"
 
 Network* create_network(Pattern* pPattern) {
 	unsigned long patternSize = pPattern->width * pPattern->height;
@@ -225,14 +226,16 @@ Pattern* retrieve_pattern(Pattern* pPattern, Network* pNetwork) {
 	do {
 		pLastPattern = copy_pattern(pPattern);
 
+		unsigned long* randomIndexes = get_random_sequence(pNetwork->height);
+
 		for (int i = 0; i < pNetwork->width; i++) {
 			float sum = 0;
 
 			for (int j = 0; j < pNetwork->height; j++) {
-				sum += pNetwork->weights[get_index(i, j, pNetwork)] * pPattern->data[j];
+				sum += pNetwork->weights[get_index(randomIndexes[i], randomIndexes[j], pNetwork)] * pPattern->data[randomIndexes[j]];
 			}
-
-			pPattern->data[i] = sgn(sum);
+			
+			pPattern->data[randomIndexes[i]] = sgn(sum);
 		}
 
 	} while (compare_patterns(pPattern, pLastPattern) != 0);
