@@ -162,6 +162,24 @@ Model* memorize_pattern(Pattern* pPattern) {
 	return pModel;
 }
 
+Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
+	unsigned long weightIndex = 0;
+
+	for (unsigned long i = 0; i < pPattern->size; i++) {
+		for (unsigned long j = 0; j < pPattern->size; j++) {
+			weightIndex = get_index(i, j, pModel);
+			
+			if (i != j) {
+				pModel->weights[weightIndex] += (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
+			} else {
+				pModel->weights[weightIndex] = 0;
+			}
+		}
+	}
+
+	return pModel;
+}
+
 void print_model(Model* pModel) {
 	for (int j = 0; j < pModel->size; j++) {
 		for (int i = 0; i < pModel->size; i++) {
