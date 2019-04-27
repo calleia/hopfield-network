@@ -20,11 +20,10 @@
  *  args    string or filename args
  */
 void print_hash(Hash hash, Hash mask, int verbose, char* args) {
-
     if (verbose) {
-        printf("0x%08lx %s\n", hash & mask, args);
+        printf("0x%08x %s\n", hash & mask, args);
     } else {
-        printf("0x%08lx\n", hash & mask);
+        printf("0x%08x\n", hash & mask);
     }
 }
 
