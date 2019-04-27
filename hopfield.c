@@ -6,36 +6,36 @@
 #include "pbm.h"
 #include "rng.h"
 
-Network* create_network(unsigned long size) {
-	Network* pNetwork = (Network*) malloc(sizeof(Network));
-	pNetwork->size = size;
-	pNetwork->weights = (float*) calloc(size * size, sizeof(float));
+Model* create_model(unsigned long size) {
+	Model* pModel = (Model*) malloc(sizeof(Model));
+	pModel->size = size;
+	pModel->weights = (float*) calloc(size * size, sizeof(float));
 
-	return pNetwork;
+	return pModel;
 }
 
-int get_index(int x, int y, Network* pNetwork) {
-	return pNetwork->size * y + x;
+int get_index(int x, int y, Model* pModel) {
+	return pModel->size * y + x;
 }
 
-Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork) {
-	if (pFirstNetwork == NULL && pSecondNetwork != NULL) {
-		return pSecondNetwork;
-	} else if (pFirstNetwork != NULL && pSecondNetwork == NULL) {
-		return pFirstNetwork;
+Model* add_models(Model* pFirstModel, Model* pSecondModel) {
+	if (pFirstModel == NULL && pSecondModel != NULL) {
+		return pSecondModel;
+	} else if (pFirstModel != NULL && pSecondModel == NULL) {
+		return pFirstModel;
 	}
 	
-	Network* pNetwork = (Network*) malloc(sizeof(Network));
-	pNetwork->size = pFirstNetwork->size;
-	pNetwork->weights = (float*) calloc(pNetwork->size * pNetwork->size, sizeof(float));
+	Model* pModel = (Model*) malloc(sizeof(Model));
+	pModel->size = pFirstModel->size;
+	pModel->weights = (float*) calloc(pModel->size * pModel->size, sizeof(float));
 
-	for (int j = 0; j < pNetwork->size; j++) {
-		for (int i = 0; i < pNetwork->size; i++) {
-			pNetwork->weights[get_index(i, j, pNetwork)] = pFirstNetwork->weights[get_index(i, j, pFirstNetwork)] + pSecondNetwork->weights[get_index(i, j, pSecondNetwork)];
+	for (int j = 0; j < pModel->size; j++) {
+		for (int i = 0; i < pModel->size; i++) {
+			pModel->weights[get_index(i, j, pModel)] = pFirstModel->weights[get_index(i, j, pFirstModel)] + pSecondModel->weights[get_index(i, j, pSecondModel)];
 		}
 	}
 
-	return pNetwork;
+	return pModel;
 }
 
 Pattern* create_pattern(unsigned long width, unsigned long height) {
@@ -73,8 +73,8 @@ Pattern* load_image(char* path) {
 	return pPattern;
 }
 
-Network* load_network(char* path) {
-	Network* pNetwork = (Network*) malloc(sizeof(Network));
+Model* load_model(char* path) {
+	Model* pModel = (Model*) malloc(sizeof(Model));
 
 	FILE* pFile = fopen(path, "rb");
 
@@ -97,10 +97,10 @@ Network* load_network(char* path) {
 	// Null terminating string
 	size[sizeLength] = 0;
 
-	pNetwork->size = strtoul(size, NULL, 10);
+	pModel->size = strtoul(size, NULL, 10);
 
 	// Read Data
-	float* data = (float*) malloc(sizeof(float) * pNetwork->size * pNetwork->size);
+	float* data = (float*) malloc(sizeof(float) * pModel->size * pModel->size);
 	size_t dataSize = 0;
 
 	char* weightString = NULL;
@@ -128,8 +128,8 @@ Network* load_network(char* path) {
 			size_t column = index - triangularNumber;
 
 			float weight = strtof(weightString, NULL);
-			data[get_index(row, column, pNetwork)] = weight;
-			data[get_index(column, row, pNetwork)] = weight;
+			data[get_index(row, column, pModel)] = weight;
+			data[get_index(column, row, pModel)] = weight;
 
 			free(weightString);
 			weightString = NULL;
@@ -141,31 +141,31 @@ Network* load_network(char* path) {
 
 	free(buffer);
 
-	pNetwork->weights = data;
+	pModel->weights = data;
 
-	return pNetwork;
+	return pModel;
 }
 
-Network* memorize_pattern(Pattern* pPattern) {
-	Network* pNetwork = create_network(pPattern->size);
+Model* memorize_pattern(Pattern* pPattern) {
+	Model* pModel = create_model(pPattern->size);
 
 	for (int i = 0; i < pPattern->size; i++) {
 		for (int j = 0; j < pPattern->size; j++) {
 			if (i != j) {
-				pNetwork->weights[get_index(i, j, pNetwork)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
+				pModel->weights[get_index(i, j, pModel)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
 			} else {
-				pNetwork->weights[get_index(i, j, pNetwork)] = 0;
+				pModel->weights[get_index(i, j, pModel)] = 0;
 			}
 		}
 	}
 
-	return pNetwork;
+	return pModel;
 }
 
-void print_network(Network* pNetwork) {
-	for (int j = 0; j < pNetwork->size; j++) {
-		for (int i = 0; i < pNetwork->size; i++) {
-			fprintf(stdout, "%f\t", pNetwork->weights[get_index(i, j, pNetwork)] );
+void print_model(Model* pModel) {
+	for (int j = 0; j < pModel->size; j++) {
+		for (int i = 0; i < pModel->size; i++) {
+			fprintf(stdout, "%f\t", pModel->weights[get_index(i, j, pModel)] );
 		}
 		fprintf(stdout, "\n");
 	}
@@ -193,15 +193,15 @@ void save_image(char* path, Pattern* pPattern) {
 	fclose(pFile);
 }
 
-void save_network(char* path, Network* pNetwork) {
+void save_model(char* path, Model* pModel) {
 	FILE* pFile = fopen(path, "w");
 
-	fprintf(pFile, "%lu\n", pNetwork->size);
+	fprintf(pFile, "%lu\n", pModel->size);
 
 	// Just save the lower triangular matrix since the weights are symmetrical between units
-	for (int j = 0; j < pNetwork->size; j++) {
+	for (int j = 0; j < pModel->size; j++) {
 		for (int i = 0; i <= j; i++) {
-			fprintf(pFile, "%.6f\t", pNetwork->weights[get_index(i, j, pNetwork)]);
+			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel)]);
 		}
 
 		fprintf(pFile, "\n");
@@ -214,19 +214,19 @@ int sgn(float input) {
 	return input < 0 ? -1 : 1;
 }
 
-Pattern* retrieve_pattern(Pattern* pPattern, Network* pNetwork) {
+Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 	Pattern* pLastPattern = NULL;
 
 	do {
 		pLastPattern = copy_pattern(pPattern);
 
-		unsigned long* randomIndexes = get_random_sequence(pNetwork->size);
+		unsigned long* randomIndexes = get_random_sequence(pModel->size);
 
-		for (int i = 0; i < pNetwork->size; i++) {
+		for (int i = 0; i < pModel->size; i++) {
 			float sum = 0;
 
-			for (int j = 0; j < pNetwork->size; j++) {
-				sum += pNetwork->weights[get_index(randomIndexes[i], randomIndexes[j], pNetwork)] * pPattern->data[randomIndexes[j]];
+			for (int j = 0; j < pModel->size; j++) {
+				sum += pModel->weights[get_index(randomIndexes[i], randomIndexes[j], pModel)] * pPattern->data[randomIndexes[j]];
 			}
 			
 			pPattern->data[randomIndexes[i]] = sgn(sum);

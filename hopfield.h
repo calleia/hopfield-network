@@ -1,23 +1,19 @@
 #ifndef HOPFIELD_H_
 #define HOPFIELD_H_
 
-#include "hash.h"
-
-#define MAX_NETWORK_UPDATES 100
-
-typedef struct Network {
+typedef struct Model {
 	unsigned long size;
 	float* weights;
-} Network;
+} Model;
 
 typedef struct Pattern {
 	unsigned long size, width, height;
 	char* data;
 } Pattern;
 
-Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork);
+Model* add_models(Model* pFirstModel, Model* pSecondModel);
 
-Network* create_network(unsigned long size);
+Model* create_model(unsigned long size);
 
 Pattern* create_pattern(unsigned long width, unsigned long height);
 
@@ -25,19 +21,19 @@ Pattern* copy_pattern(Pattern* pPattern);
 
 Pattern* load_image(char* path);
 
-Network* load_network(char* path);
+Model* load_model(char* path);
 
-Network* memorize_pattern(Pattern* pPattern);
+Model* memorize_pattern(Pattern* pPattern);
 
-void print_network(Network* pNetwork);
+void print_model(Model* pModel);
 
 void print_pattern(Pattern* pPattern);
 
-Pattern* retrieve_pattern(Pattern* pPattern, Network* pNetwork);
+Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel);
 
 void save_image(char* path, Pattern* pPattern);
 
-void save_network(char* path, Network* pNetwork);
+void save_model(char* path, Model* pModel);
 
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern);
 

@@ -7,34 +7,34 @@
 void memorize(char* input_path, char* output_path) {
 	Pattern* pPattern = load_image(input_path);
 
-	Network* pNetwork = memorize_pattern(pPattern);
+	Model* pModel = memorize_pattern(pPattern);
 
-	save_network(output_path, pNetwork);
+	save_model(output_path, pModel);
 }
 
 void memorize_many(char** input_paths, char* output_path) {
-	Network* pNetwork = NULL;
+	Model* pModel = NULL;
 
 	int i = 0;
 
 	while (input_paths[i] != NULL) {
 		Pattern* pPattern = load_image(input_paths[i]);
 
-		Network* pNewNetwork = memorize_pattern(pPattern);
-		pNetwork = add_networks(pNetwork, pNewNetwork);
+		Model* pNewModel = memorize_pattern(pPattern);
+		pModel = add_models(pModel, pNewModel);
 
 		i++;
 	}
 
-	save_network(output_path, pNetwork);
+	save_model(output_path, pModel);
 }
 
-void retrieve(char* input_path, char* output_path, char* network_path) {
+void retrieve(char* input_path, char* output_path, char* model_path) {
 	Pattern* pPattern = load_image(input_path);
 
-	Network* pNetwork = load_network(network_path);
+	Model* pModel = load_model(model_path);
 
-	Pattern* pRecovered = retrieve_pattern(pPattern, pNetwork);
+	Pattern* pRecovered = retrieve_pattern(pPattern, pModel);
 
 	save_image(output_path, pRecovered);
 }
@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
 			if ((argc - optind) == 3) {
 				retrieve(argv[optind + 1], output_filename, argv[optind + 2]);
 			} else {
-				fprintf(stderr, "You must provide an input and a network model.\n");
+				fprintf(stderr, "You must provide an input and a model model.\n");
 			}
 		} else {
 			fprintf(stderr, "Command '%s' not recognized.\n", argv[optind]);
