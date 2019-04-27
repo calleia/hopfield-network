@@ -40,12 +40,14 @@ Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork) {
 
 Pattern* create_pattern(unsigned long width, unsigned long height) {
 	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
+	pPattern->size = width * height;
 	pPattern->width = width;
 	pPattern->height = height;
-	pPattern->data = (char*) malloc(((width * height) + 1) * sizeof(char));
+
+	pPattern->data = (char*) malloc((pPattern->size + 1) * sizeof(char));
 
 	// Make pPattern->data NULL terminated
-	pPattern->data[width * height] = 0;
+	pPattern->data[pPattern->size] = 0;
 
 	return pPattern;
 }
@@ -63,9 +65,8 @@ Pattern* load_image(char* path) {
 	fclose(pFile);
 
 	Pattern* pPattern = create_pattern(pImage->width, pImage->height);
-	unsigned long patternSize = pPattern->width * pPattern->height;
 
-	for (int i = 0; i < patternSize; i++) {
+	for (int i = 0; i < pPattern->size; i++) {
 		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
 	}
 	
@@ -146,13 +147,12 @@ Network* load_network(char* path) {
 }
 
 Network* memorize_pattern(Pattern* pPattern) {
-	Network* pNetwork = create_network(pPattern->width * pPattern->height);
-	unsigned long patternSize = pPattern->width * pPattern->height;
+	Network* pNetwork = create_network(pPattern->size);
 
-	for (int i = 0; i < pNetwork->size; i++) {
-		for (int j = 0; j < pNetwork->size; j++) {
+	for (int i = 0; i < pPattern->size; i++) {
+		for (int j = 0; j < pPattern->size; j++) {
 			if (i != j) {
-				pNetwork->weights[get_index(i, j, pNetwork)] = (pPattern->data[i] * pPattern->data[j]) / (float) patternSize;
+				pNetwork->weights[get_index(i, j, pNetwork)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
 			} else {
 				pNetwork->weights[get_index(i, j, pNetwork)] = 0;
 			}
@@ -172,9 +172,7 @@ void print_network(Network* pNetwork) {
 }
 
 void print_pattern(Pattern* pPattern) {
-	unsigned long patternSize = pPattern->width * pPattern->height;
-
-	for (int i = 0; i < patternSize; i++) {
+	for (int i = 0; i < pPattern->size; i++) {
 		fprintf(stdout, "%d\t", pPattern->data[i]);
 	}
 }
@@ -240,6 +238,9 @@ Pattern* retrieve_pattern(Pattern* pPattern, Network* pNetwork) {
 }
 
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern) {
+	if (pFirstPattern->size != pSecondPattern->size)
+		return 1;
+
 	if (pFirstPattern->width != pSecondPattern->width)
 		return 1;
 

@@ -11,7 +11,7 @@ typedef struct Network {
 } Network;
 
 typedef struct Pattern {
-	unsigned long width, height;
+	unsigned long size, width, height;
 	char* data;
 } Pattern;
 
