@@ -21,6 +21,8 @@ Network* create_network(unsigned long size);
 
 Pattern* create_pattern(unsigned long width, unsigned long height);
 
+Pattern* copy_pattern(Pattern* pPattern);
+
 Pattern* load_image(char* path);
 
 Network* load_network(char* path);
