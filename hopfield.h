@@ -6,7 +6,7 @@
 #define MAX_NETWORK_UPDATES 100
 
 typedef struct Network {
-	unsigned long width, height;
+	unsigned long size;
 	float* weights;
 } Network;
 
@@ -17,7 +17,7 @@ typedef struct Pattern {
 
 Network* add_networks(Network* pFirstNetwork, Network* pSecondNetwork);
 
-Network* create_network(Pattern* pPattern);
+Network* create_network(unsigned long size);
 
 Pattern* create_pattern(unsigned long width, unsigned long height);
 
