@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "hopfield.h"
 #include "pbm.h"
 #include "rng.h"
