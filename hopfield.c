@@ -74,74 +74,65 @@ Pattern* load_image(char* path) {
 }
 
 Model* load_model(char* path) {
-	Model* pModel = (Model*) malloc(sizeof(Model));
+	FILE* pFile;
+	Model* pModel;
+	float* pWeight;
+	float* pWeightList;
+	unsigned long* pModelSize;
+	unsigned long weightCount;
+	unsigned long weightCountOnTriangularMatrix;
 
-	FILE* pFile = fopen(path, "rb");
+	pWeight = malloc(sizeof(float));
+	pModelSize = malloc(sizeof(unsigned long));
 
-	char* buffer = (char*) malloc(sizeof(char));
+	pFile = fopen(path, "r");
 
-	// Read Size
-	char* size = NULL;
-	size_t sizeLength = 0;
-
-	do {
-		fread(buffer, 1, 1, pFile);
-
-		if (*buffer >= '0' && *buffer <= '9') {
-			sizeLength++;
-			size = (char*) realloc(size, sizeLength + 1);
-			size[sizeLength - 1] = *buffer;
-		}
-	} while (*buffer != '\n');
-
-	// Null terminating string
-	size[sizeLength] = 0;
-
-	pModel->size = strtoul(size, NULL, 10);
-
-	// Read Data
-	float* data = (float*) malloc(sizeof(float) * pModel->size * pModel->size);
-	size_t dataSize = 0;
-
-	char* weightString = NULL;
-	size_t weightSize = 0;
-
-	while (fread(buffer, 1, 1, pFile) == 1) {
-
-		if ((*buffer >= '0' && *buffer <= '9') || *buffer == '.' || *buffer == '-') {
-			weightSize++;
-			weightString = (char*) realloc(weightString, weightSize + 1);
-			weightString[weightSize - 1] = *buffer;
-			weightString[weightSize] = 0;
-		} else {
-			if (weightString == NULL) {
-				continue;
-			}
-
-			size_t index = dataSize;
-			dataSize++;
-
-			// Calculate weight indexes (row, column) based on it's position index
-			// SOURCE: https://stackoverflow.com/questions/9674179/getting-the-row-and-column-of-a-triangular-matrix-given-the-index
-			size_t row = floor(-0.5 + sqrt(0.25 + 2 * index));
-			size_t triangularNumber = row * (row + 1) / 2;
-			size_t column = index - triangularNumber;
-
-			float weight = strtof(weightString, NULL);
-			data[get_index(row, column, pModel)] = weight;
-			data[get_index(column, row, pModel)] = weight;
-
-			free(weightString);
-			weightString = NULL;
-			weightSize = 0;
-		}
+	// Read model size from file (total weight count == size^2)
+	if (fscanf(pFile, "%ld", pModelSize) == EOF) {
+		fprintf(stderr, "%s\n", "Could not read model size.");
 	}
-	
+
+	// Calculate the weight count on a triangular matrix
+	weightCountOnTriangularMatrix = *pModelSize * (*pModelSize + 1) / 2;
+	pWeightList = malloc(weightCountOnTriangularMatrix * sizeof(float));
+
+	weightCount = 0;
+
+	// Read weights from file
+	while (fscanf(pFile, "%f", pWeight) != EOF) {
+		if (weightCount >= weightCountOnTriangularMatrix) {
+			fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
+			break;
+		}
+
+		pWeightList[weightCount] = *pWeight;
+		weightCount++;
+	}
+
+	if (weightCount != weightCountOnTriangularMatrix) {
+		fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
+	}
+
+	// Create new (empty) model
+	pModel = create_model(*pModelSize);
+
+	// Expand input data from a lower triangular matrix to a complete square matrix
+	for (int i = 0; i < weightCount; i++) {
+		// Calculate weight indexes (row, column) based on it's position index
+		// SOURCE: https://stackoverflow.com/questions/9674179/getting-the-row-and-column-of-a-triangular-matrix-given-the-index
+		size_t row = floor(-0.5 + sqrt(0.25 + 2 * i));
+		size_t triangularNumber = row * (row + 1) / 2;
+		size_t column = i - triangularNumber;
+
+		pModel->weights[get_index(row, column, pModel)] = pWeightList[i];
+		pModel->weights[get_index(column, row, pModel)] = pWeightList[i];
+	}
+
+	// Freeing allocated memory
 	fclose(pFile);
-
-	free(buffer);
-
-	pModel->weights = data;
+	free(pWeight);
+	free(pWeightList);
+	free(pModelSize);
 
 	return pModel;
 }
