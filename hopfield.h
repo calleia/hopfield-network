@@ -37,6 +37,8 @@ void save_image(char* path, Pattern* pPattern);
 
 void save_model(char* path, Model* pModel);
 
+void save_full_model(char* path, Model* pModel);
+
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern);
 
 #endif

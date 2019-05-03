@@ -219,6 +219,23 @@ void save_model(char* path, Model* pModel) {
 	fclose(pFile);
 }
 
+void save_full_model(char* path, Model* pModel) {
+	FILE* pFile = fopen(path, "w");
+	
+	fprintf(pFile, "%lu\n", pModel->size);
+
+	// Save the whole square matrix
+	for (int j = 0; j < pModel->size; j++) {
+		for (int i = 0; i < pModel->size; i++) {
+			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel)]);
+		}
+
+		fprintf(pFile, "\n");
+	}
+
+	fclose(pFile);
+}
+
 int sgn(float input) {
 	return input < 0 ? -1 : 1;
 }
