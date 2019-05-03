@@ -137,6 +137,51 @@ Model* load_model(char* path) {
 	return pModel;
 }
 
+Model* load_full_model(char* path) {
+	FILE* pFile;
+	Model* pModel;
+	float* pWeight;
+	unsigned long* pModelSize;
+	unsigned long weightCount;
+
+	pWeight = malloc(sizeof(float));
+	pModelSize = malloc(sizeof(unsigned long));
+
+	pFile = fopen(path, "r");
+
+	// Read model size from file (total weight count == size^2)
+	if (fscanf(pFile, "%ld", pModelSize) == EOF) {
+		fprintf(stderr, "%s\n", "Could not read model size.");
+	}
+
+	// Create new (empty) model
+	pModel = create_model(*pModelSize);
+
+	weightCount = 0;
+
+	// Read weights from file
+	while (fscanf(pFile, "%f", pWeight) != EOF) {
+		if (weightCount >= pModel->size * pModel->size) {
+			fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
+			break;
+		}
+
+		pModel->weights[weightCount] = *pWeight;
+		weightCount++;
+	}
+
+	if (weightCount != pModel->size * pModel->size) {
+		fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
+	}
+
+	// Freeing allocated memory
+	fclose(pFile);
+	free(pWeight);
+	free(pModelSize);
+
+	return pModel;
+}
+
 Model* memorize_pattern(Pattern* pPattern) {
 	Model* pModel = create_model(pPattern->size);
 
@@ -221,7 +266,7 @@ void save_model(char* path, Model* pModel) {
 
 void save_full_model(char* path, Model* pModel) {
 	FILE* pFile = fopen(path, "w");
-	
+
 	fprintf(pFile, "%lu\n", pModel->size);
 
 	// Save the whole square matrix

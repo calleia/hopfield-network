@@ -23,6 +23,8 @@ Pattern* load_image(char* path);
 
 Model* load_model(char* path);
 
+Model* load_full_model(char* path);
+
 Model* memorize_pattern(Pattern* pPattern);
 
 Model* memorize_patterns(Pattern* pPattern, Model* pModel);
