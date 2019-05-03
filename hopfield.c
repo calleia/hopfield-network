@@ -6,16 +6,12 @@
 #include "pbm.h"
 #include "rng.h"
 
-Model* create_model(unsigned long size) {
-	Model* pModel = (Model*) malloc(sizeof(Model));
-	pModel->size = size;
-	pModel->weights = (float*) calloc(size * size, sizeof(float));
-
-	return pModel;
-}
-
 int get_index(int x, int y, Model* pModel) {
 	return pModel->size * y + x;
+}
+
+int sgn(float input) {
+	return input < 0 ? -1 : 1;
 }
 
 Model* add_models(Model* pFirstModel, Model* pSecondModel) {
@@ -38,39 +34,12 @@ Model* add_models(Model* pFirstModel, Model* pSecondModel) {
 	return pModel;
 }
 
-Pattern* create_pattern(unsigned long width, unsigned long height) {
-	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
-	pPattern->size = width * height;
-	pPattern->width = width;
-	pPattern->height = height;
+Model* create_model(unsigned long size) {
+	Model* pModel = (Model*) malloc(sizeof(Model));
+	pModel->size = size;
+	pModel->weights = (float*) calloc(size * size, sizeof(float));
 
-	pPattern->data = (char*) malloc((pPattern->size + 1) * sizeof(char));
-
-	// Make pPattern->data NULL terminated
-	pPattern->data[pPattern->size] = 0;
-
-	return pPattern;
-}
-
-Pattern* copy_pattern(Pattern* pPattern) {
-	Pattern* pCopiedPattern = create_pattern(pPattern->width, pPattern->height);
-	strcpy(pCopiedPattern->data, pPattern->data);
-
-	return pCopiedPattern;
-}
-
-Pattern* load_image(char* path) {
-	FILE *pFile = fopen(path, "rb");
-	PBMImage* pImage = loadPBM(pFile);
-	fclose(pFile);
-
-	Pattern* pPattern = create_pattern(pImage->width, pImage->height);
-
-	for (int i = 0; i < pPattern->size; i++) {
-		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
-	}
-	
-	return pPattern;
+	return pModel;
 }
 
 Model* load_model(char* path) {
@@ -182,71 +151,6 @@ Model* load_full_model(char* path) {
 	return pModel;
 }
 
-Model* memorize_pattern(Pattern* pPattern) {
-	Model* pModel = create_model(pPattern->size);
-
-	for (int i = 0; i < pPattern->size; i++) {
-		for (int j = 0; j < pPattern->size; j++) {
-			if (i != j) {
-				pModel->weights[get_index(i, j, pModel)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
-			} else {
-				pModel->weights[get_index(i, j, pModel)] = 0;
-			}
-		}
-	}
-
-	return pModel;
-}
-
-Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
-	unsigned long weightIndex = 0;
-
-	for (unsigned long i = 0; i < pPattern->size; i++) {
-		for (unsigned long j = 0; j < pPattern->size; j++) {
-			weightIndex = get_index(i, j, pModel);
-			
-			if (i != j) {
-				pModel->weights[weightIndex] += (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
-			} else {
-				pModel->weights[weightIndex] = 0;
-			}
-		}
-	}
-
-	return pModel;
-}
-
-void print_model(Model* pModel) {
-	for (int j = 0; j < pModel->size; j++) {
-		for (int i = 0; i < pModel->size; i++) {
-			fprintf(stdout, "%f\t", pModel->weights[get_index(i, j, pModel)] );
-		}
-		fprintf(stdout, "\n");
-	}
-}
-
-void print_pattern(Pattern* pPattern) {
-	for (int i = 0; i < pPattern->size; i++) {
-		fprintf(stdout, "%d\t", pPattern->data[i]);
-	}
-}
-
-void save_image(char* path, Pattern* pPattern) {
-	FILE *pFile = fopen(path, "w");
-
-	fprintf(pFile, "P1\n%lu %lu\n", pPattern->width, pPattern->height);
-
-	for (int j = 0; j < pPattern->height; j++) {
-		for (int i = 0; i < pPattern->width; i++) {
-			fprintf(pFile, "%c ", pPattern->data[j * pPattern->height + i] == 1 ? '1' : '0');
-		}
-
-		fprintf(pFile, "\n");
-	}
-
-	fclose(pFile);
-}
-
 void save_model(char* path, Model* pModel) {
 	FILE* pFile = fopen(path, "w");
 
@@ -281,8 +185,47 @@ void save_full_model(char* path, Model* pModel) {
 	fclose(pFile);
 }
 
-int sgn(float input) {
-	return input < 0 ? -1 : 1;
+void print_model(Model* pModel) {
+	for (int j = 0; j < pModel->size; j++) {
+		for (int i = 0; i < pModel->size; i++) {
+			fprintf(stdout, "%f\t", pModel->weights[get_index(i, j, pModel)] );
+		}
+		fprintf(stdout, "\n");
+	}
+}
+
+Model* memorize_pattern(Pattern* pPattern) {
+	Model* pModel = create_model(pPattern->size);
+
+	for (int i = 0; i < pPattern->size; i++) {
+		for (int j = 0; j < pPattern->size; j++) {
+			if (i != j) {
+				pModel->weights[get_index(i, j, pModel)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
+			} else {
+				pModel->weights[get_index(i, j, pModel)] = 0;
+			}
+		}
+	}
+
+	return pModel;
+}
+
+Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
+	unsigned long weightIndex = 0;
+
+	for (unsigned long i = 0; i < pPattern->size; i++) {
+		for (unsigned long j = 0; j < pPattern->size; j++) {
+			weightIndex = get_index(i, j, pModel);
+			
+			if (i != j) {
+				pModel->weights[weightIndex] += (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
+			} else {
+				pModel->weights[weightIndex] = 0;
+			}
+		}
+	}
+
+	return pModel;
 }
 
 Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
@@ -306,6 +249,63 @@ Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 	} while (compare_patterns(pPattern, pLastPattern) != 0);
 
 	return pPattern;
+}
+
+Pattern* copy_pattern(Pattern* pPattern) {
+	Pattern* pCopiedPattern = create_pattern(pPattern->width, pPattern->height);
+	strcpy(pCopiedPattern->data, pPattern->data);
+
+	return pCopiedPattern;
+}
+
+Pattern* create_pattern(unsigned long width, unsigned long height) {
+	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
+	pPattern->size = width * height;
+	pPattern->width = width;
+	pPattern->height = height;
+
+	pPattern->data = (char*) malloc((pPattern->size + 1) * sizeof(char));
+
+	// Make pPattern->data NULL terminated
+	pPattern->data[pPattern->size] = 0;
+
+	return pPattern;
+}
+
+Pattern* load_image(char* path) {
+	FILE *pFile = fopen(path, "rb");
+	PBMImage* pImage = loadPBM(pFile);
+	fclose(pFile);
+
+	Pattern* pPattern = create_pattern(pImage->width, pImage->height);
+
+	for (int i = 0; i < pPattern->size; i++) {
+		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
+	}
+	
+	return pPattern;
+}
+
+void save_image(char* path, Pattern* pPattern) {
+	FILE *pFile = fopen(path, "w");
+
+	fprintf(pFile, "P1\n%lu %lu\n", pPattern->width, pPattern->height);
+
+	for (int j = 0; j < pPattern->height; j++) {
+		for (int i = 0; i < pPattern->width; i++) {
+			fprintf(pFile, "%c ", pPattern->data[j * pPattern->height + i] == 1 ? '1' : '0');
+		}
+
+		fprintf(pFile, "\n");
+	}
+
+	fclose(pFile);
+}
+
+void print_pattern(Pattern* pPattern) {
+	for (int i = 0; i < pPattern->size; i++) {
+		fprintf(stdout, "%d\t", pPattern->data[i]);
+	}
 }
 
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern) {

@@ -15,31 +15,31 @@ Model* add_models(Model* pFirstModel, Model* pSecondModel);
 
 Model* create_model(unsigned long size);
 
-Pattern* create_pattern(unsigned long width, unsigned long height);
-
-Pattern* copy_pattern(Pattern* pPattern);
-
-Pattern* load_image(char* path);
-
 Model* load_model(char* path);
 
 Model* load_full_model(char* path);
+
+void save_model(char* path, Model* pModel);
+
+void save_full_model(char* path, Model* pModel);
+
+void print_model(Model* pModel);
 
 Model* memorize_pattern(Pattern* pPattern);
 
 Model* memorize_patterns(Pattern* pPattern, Model* pModel);
 
-void print_model(Model* pModel);
-
-void print_pattern(Pattern* pPattern);
-
 Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel);
+
+Pattern* copy_pattern(Pattern* pPattern);
+
+Pattern* create_pattern(unsigned long width, unsigned long height);
+
+Pattern* load_image(char* path);
 
 void save_image(char* path, Pattern* pPattern);
 
-void save_model(char* path, Model* pModel);
-
-void save_full_model(char* path, Model* pModel);
+void print_pattern(Pattern* pPattern);
 
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern);
 
