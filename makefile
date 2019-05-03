@@ -1,8 +1,8 @@
 CC = gcc
-DEPS = pbm.h hopfield.h hash.h rng.h
+DEPS = pbm.h hopfield.h rng.h
 TEMPDIR = temp
 
-_OBJS = main.o pbm.o hopfield.o hash.o rng.o
+_OBJS = main.o pbm.o hopfield.o rng.o
 OBJS = $(patsubst %, $(TEMPDIR)/%, $(_OBJS))
 
 $(TEMPDIR)/%.o: %.c $(DEPS)
