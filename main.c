@@ -9,7 +9,7 @@ void memorize(char* input_path, char* output_path) {
 
 	Model* pModel = memorize_pattern(pPattern);
 
-	save_model(output_path, pModel);
+	save_full_model(output_path, pModel);
 }
 
 void memorize_many(char** input_paths, char* output_path) {
@@ -26,13 +26,13 @@ void memorize_many(char** input_paths, char* output_path) {
 		i++;
 	}
 
-	save_model(output_path, pModel);
+	save_full_model(output_path, pModel);
 }
 
 void retrieve(char* input_path, char* output_path, char* model_path) {
 	Pattern* pPattern = load_image(input_path);
 
-	Model* pModel = load_model(model_path);
+	Model* pModel = load_full_model(model_path);
 
 	Pattern* pRecovered = retrieve_pattern(pPattern, pModel);
 
