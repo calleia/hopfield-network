@@ -39,6 +39,12 @@ Model* create_model(unsigned long size) {
 	pModel->size = size;
 	pModel->weights = (float*) calloc(size * size, sizeof(float));
 
+	int testResult = test_new_model(pModel);
+	if (testResult == 1) {
+		fprintf(stderr, "Error: an error ocurred while creating a model.\n");
+		exit(0);
+	}
+
 	return pModel;
 }
 
@@ -192,6 +198,28 @@ void print_model(Model* pModel) {
 		}
 		fprintf(stdout, "\n");
 	}
+}
+
+int test_new_model(Model* pModel) {
+	unsigned long totalSize;
+
+	if (pModel ==  NULL)
+		return 1;
+
+	if (pModel->weights == NULL)
+		return 1;
+
+	if (pModel->size < 1)
+		return 1;
+
+	totalSize = pModel->size * pModel->size;
+
+	for (int i = 0; i < totalSize; i++) {
+		if (pModel->weights[i] != 0.0)
+			return 1;
+	}
+
+	return 0;
 }
 
 Model* memorize_pattern(Pattern* pPattern) {

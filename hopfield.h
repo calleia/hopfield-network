@@ -25,6 +25,8 @@ void save_full_model(char* path, Model* pModel);
 
 void print_model(Model* pModel);
 
+int test_new_model(Model* pModel);
+
 Model* memorize_pattern(Pattern* pPattern);
 
 Model* memorize_patterns(Pattern* pPattern, Model* pModel);
