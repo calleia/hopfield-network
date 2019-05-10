@@ -80,23 +80,6 @@ Model* load_full_model(char* path) {
 	return pModel;
 }
 
-void save_model(char* path, Model* pModel) {
-	FILE* pFile = fopen(path, "w");
-
-	fprintf(pFile, "%lu\n", pModel->size);
-
-	// Just save the lower triangular matrix since the weights are symmetrical between units
-	for (int j = 0; j < pModel->size; j++) {
-		for (int i = 0; i <= j; i++) {
-			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel->size)]);
-		}
-
-		fprintf(pFile, "\n");
-	}
-
-	fclose(pFile);
-}
-
 void save_full_model(char* path, Model* pModel) {
 	FILE* pFile;
 	unsigned long weightIndex;

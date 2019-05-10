@@ -19,8 +19,6 @@ Model* create_model(unsigned long size);
 
 Model* load_full_model(char* path);
 
-void save_model(char* path, Model* pModel);
-
 void save_full_model(char* path, Model* pModel);
 
 int test_new_model(Model* pModel);
