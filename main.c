@@ -59,18 +59,25 @@ void readInputFile(FILE* pInputFile) {
 	int inputCount;
 
 	option = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	check_memory_allocation(option, "option", "readInputFile()");
+
 	value = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	check_memory_allocation(value, "value", "readInputFile()");
+
 	mode = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	check_memory_allocation(mode, "mode", "readInputFile()");
 	
 	modelFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	check_memory_allocation(modelFilename, "modelFilename", "readInputFile()");
+
 	outputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
-	inputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	check_memory_allocation(outputFilename, "outputFilename", "readInputFile()");
+
 	inputFilenameList = NULL;
 	inputCount = 0;
 
 	// Read pairs of (tab separated) settings from input file
 	while (fscanf(pInputFile, "%s %s", option, value) == 2) {
-
 		if (strcmp(option, "MODE") == 0) {
 			// Read MODE option value
 			strcpy(mode, value);
@@ -85,10 +92,14 @@ void readInputFile(FILE* pInputFile) {
 
 			// Read INPUT_FILENAME option value
 			inputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+			check_memory_allocation(inputFilename, "inputFilename", "readInputFile()");
+
 			strcpy(inputFilename, value);
 
 			// Append INPUT_FILENAME to list of inputs
 			inputFilenameList = (char**) realloc(inputFilenameList, (inputCount + 1) * sizeof(char*));
+			check_memory_allocation(inputFilenameList, "inputFilenameList", "readInputFile()");
+			
 			inputFilenameList[inputCount - 1] = inputFilename;
 		} else {
 			// Log error & stop execution if input file has ANY invalid option  

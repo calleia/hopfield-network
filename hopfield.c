@@ -20,8 +20,12 @@ Model* create_model(unsigned long size) {
 
 	// Allocate memory for model struct
 	pModel = (Model*) malloc(sizeof(Model));
+	check_memory_allocation(pModel, "pModel", "create_model()");
+
 	pModel->size = size;
+
 	pModel->weights = (float*) calloc(size * size, sizeof(float));
+	check_memory_allocation(pModel->weights, "pModel->weights", "create_model()");
 
 	// Test if memory allocation was successful
 	testNewModelResult = test_new_model(pModel);
@@ -43,7 +47,10 @@ Model* load_full_model(char* path) {
 	unsigned long weightCount;
 
 	pWeight = malloc(sizeof(float));
+	check_memory_allocation(pWeight, "pWeight", "load_full_model()");
+
 	pModelSize = malloc(sizeof(unsigned long));
+	check_memory_allocation(pModelSize, "pModelSize", "load_full_model()");
 
 	pFile = fopen(path, "r");
 
@@ -111,7 +118,7 @@ void save_full_model(char* path, Model* pModel) {
 int test_new_model(Model* pModel) {
 	unsigned long totalSize;
 	unsigned long i;
-
+	
 	if (pModel ==  NULL)
 		return 1;
 
@@ -194,12 +201,15 @@ Pattern* create_pattern(unsigned long width, unsigned long height) {
 	unsigned long totalDataLength;
 
 	pPattern = (Pattern*) malloc(sizeof(Pattern));
+	check_memory_allocation(pPattern, "pPattern", "create_pattern()");
+
 	pPattern->size = width * height;
 	pPattern->width = width;
 	pPattern->height = height;
 
 	totalDataLength = pPattern->size + 1;
 	pPattern->data = (char*) malloc(totalDataLength * sizeof(char));
+	check_memory_allocation(pPattern->data, "pPattern->data", "create_pattern()");
 
 	// Make pPattern->data NULL terminated
 	pPattern->data[pPattern->size] = 0;
@@ -271,4 +281,12 @@ int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern) {
 		return 1;
 
 	return 0;
+}
+
+void check_memory_allocation(void* pPointer, char* pPointerName, char* pFunctionName) {
+	if (pPointer == NULL) {
+		fprintf(stderr, "Error: could not allocate memory for pointer \'%s\' in function \'%s\'.\n", pPointerName, pFunctionName);
+
+		exit(0);
+	}
 }

@@ -37,4 +37,6 @@ void save_image(char* path, Pattern* pPattern);
 
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern);
 
+void check_memory_allocation(void* pPointer, char* pPointerName, char* pFunctionName);
+
 #endif
