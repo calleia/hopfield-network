@@ -299,18 +299,29 @@ Pattern* load_image(char* path) {
 	}
 
 	fclose(pFile);
-	
+
 	return pPattern;
 }
 
 void save_image(char* path, Pattern* pPattern) {
-	FILE *pFile = fopen(path, "w");
+	FILE* pFile;
+	unsigned long index;
+	char binaryPixel;
 
+	// Create PBM image file
+	pFile = fopen(path, "w");
+
+	// Write image width & height to PBM file
 	fprintf(pFile, "P1\n%lu %lu\n", pPattern->width, pPattern->height);
 
+	// Write image data to PBM file
 	for (int j = 0; j < pPattern->height; j++) {
 		for (int i = 0; i < pPattern->width; i++) {
-			fprintf(pFile, "%c ", pPattern->data[j * pPattern->height + i] == 1 ? '1' : '0');
+			index = get_index(i, j, pPattern->height);
+			binaryPixel = pPattern->data[index] == 1 ? '1' : '0';
+
+			// Write each binary pixel to PBM file
+			fprintf(pFile, "%c ", binaryPixel);
 		}
 
 		fprintf(pFile, "\n");
