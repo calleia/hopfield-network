@@ -234,7 +234,7 @@ Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 	unsigned long weightIndex;
 	int isTheSamePattern;
 	float sum;
-	
+
 	do {
 		pLastPattern = copy_pattern(pPattern);
 
@@ -258,7 +258,8 @@ Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 }
 
 Pattern* copy_pattern(Pattern* pPattern) {
-	Pattern* pCopiedPattern = create_pattern(pPattern->width, pPattern->height);
+	Pattern* pCopiedPattern;
+	pCopiedPattern = create_pattern(pPattern->width, pPattern->height);
 	strcpy(pCopiedPattern->data, pPattern->data);
 
 	return pCopiedPattern;
