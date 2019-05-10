@@ -162,14 +162,23 @@ void save_model(char* path, Model* pModel) {
 }
 
 void save_full_model(char* path, Model* pModel) {
-	FILE* pFile = fopen(path, "w");
+	FILE* pFile;
+	unsigned long weightIndex;
 
+	// Create model file
+	pFile = fopen(path, "w");
+
+	// Write the model size in the model file
 	fprintf(pFile, "%lu\n", pModel->size);
 
-	// Save the whole square matrix
+	// Save the whole square matrix of weights
 	for (int j = 0; j < pModel->size; j++) {
 		for (int i = 0; i < pModel->size; i++) {
-			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel->size)]);
+			// Calculate current weight index
+			weightIndex = get_index(i, j, pModel->size);
+
+			// Write current weight in the model file
+			fprintf(pFile, "%.6f\t", pModel->weights[weightIndex]);
 		}
 
 		fprintf(pFile, "\n");
