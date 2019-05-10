@@ -210,14 +210,16 @@ int test_new_model(Model* pModel) {
 }
 
 Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
-	unsigned long weightIndex = 0;
+	unsigned long weightIndex;
+	float weight;
 
 	for (unsigned long i = 0; i < pPattern->size; i++) {
 		for (unsigned long j = 0; j < pPattern->size; j++) {
 			weightIndex = get_index(i, j, pModel->size);
 			
 			if (i != j) {
-				pModel->weights[weightIndex] += (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
+				weight = pPattern->data[i] * pPattern->data[j] / (float) pPattern->size;
+				pModel->weights[weightIndex] += weight;
 			} else {
 				pModel->weights[weightIndex] = 0;
 			}
