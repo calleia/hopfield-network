@@ -6,29 +6,35 @@
 
 #define MAX_FILENAME_LENGTH 1024
 
-void memorize(char* input_path, char* output_path) {
-	Pattern* pPattern = load_image(input_path);
+void save(char** inputFilenameList, char* outputFilename) {
+	Model* pModel;
+	Pattern* pInputPattern;
+	int index;
 
-	Model* pModel = memorize_pattern(pPattern);
+	pModel = NULL;
+	index = 0;
 
-	save_full_model(output_path, pModel);
-}
+	while (inputFilenameList[index] != NULL) {
+		// Read input images
+		pInputPattern = load_image(inputFilenameList[index]);
 
-void memorize_many(char** input_paths, char* output_path) {
-	Model* pModel = NULL;
+		// Create empty model in the first iteration
+		if (pModel == NULL) {
+			pModel = create_model(pInputPattern->size);
+		}
 
-	int i = 0;
+		// Save input image on the model (update weights)
+		pModel = memorize_patterns(pInputPattern, pModel);
 
-	while (input_paths[i] != NULL) {
-		Pattern* pPattern = load_image(input_paths[i]);
-
-		Model* pNewModel = memorize_pattern(pPattern);
-		pModel = add_models(pModel, pNewModel);
-
-		i++;
+		index++;
 	}
 
-	save_full_model(output_path, pModel);
+	// Save model in a file
+	save_full_model(outputFilename, pModel);
+
+	// Free memory
+	free(pModel);
+	free(pInputPattern);
 }
 
 void retrieve(char* input_path, char* output_path, char* model_path) {
@@ -96,7 +102,7 @@ void readInputFile(FILE* pInputFile) {
 
 	// Verify execution mode value
 	if (strcmp(mode, "save") == 0) {
-		memorize_many(inputFilenameList, outputFilename);
+		save(inputFilenameList, outputFilename);
 	} else if (strcmp(mode, "retrieve") == 0) {
 		retrieve(inputFilename, outputFilename, modelFilename);
 	} else {
