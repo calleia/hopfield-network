@@ -230,24 +230,29 @@ Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
 }
 
 Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
-	Pattern* pLastPattern = NULL;
-
+	Pattern* pLastPattern;
+	unsigned long weightIndex;
+	int isTheSamePattern;
+	float sum;
+	
 	do {
 		pLastPattern = copy_pattern(pPattern);
 
 		unsigned long* randomIndexes = get_random_sequence(pModel->size);
 
 		for (int i = 0; i < pModel->size; i++) {
-			float sum = 0;
+			sum = 0;
 
 			for (int j = 0; j < pModel->size; j++) {
-				sum += pModel->weights[get_index(randomIndexes[i], randomIndexes[j], pModel->size)] * pPattern->data[randomIndexes[j]];
+				weightIndex = get_index(randomIndexes[i], randomIndexes[j], pModel->size);
+				sum += pModel->weights[weightIndex] * pPattern->data[randomIndexes[j]];
 			}
 			
 			pPattern->data[randomIndexes[i]] = sgn(sum);
 		}
 
-	} while (compare_patterns(pPattern, pLastPattern) != 0);
+		isTheSamePattern = compare_patterns(pPattern, pLastPattern);
+	} while (isTheSamePattern != 0);
 
 	return pPattern;
 }
