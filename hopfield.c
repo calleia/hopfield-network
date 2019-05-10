@@ -6,8 +6,8 @@
 #include "pbm.h"
 #include "rng.h"
 
-int get_index(int x, int y, Model* pModel) {
-	return pModel->size * y + x;
+unsigned long get_index(unsigned long x, unsigned long y, unsigned long size) {
+	return size * y + x;
 }
 
 int sgn(float input) {
@@ -79,8 +79,8 @@ Model* load_model(char* path) {
 		size_t triangularNumber = row * (row + 1) / 2;
 		size_t column = i - triangularNumber;
 
-		pModel->weights[get_index(row, column, pModel)] = pWeightList[i];
-		pModel->weights[get_index(column, row, pModel)] = pWeightList[i];
+		pModel->weights[get_index(row, column, pModel->size)] = pWeightList[i];
+		pModel->weights[get_index(column, row, pModel->size)] = pWeightList[i];
 	}
 
 	// Freeing allocated memory
@@ -145,7 +145,7 @@ void save_model(char* path, Model* pModel) {
 	// Just save the lower triangular matrix since the weights are symmetrical between units
 	for (int j = 0; j < pModel->size; j++) {
 		for (int i = 0; i <= j; i++) {
-			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel)]);
+			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel->size)]);
 		}
 
 		fprintf(pFile, "\n");
@@ -162,7 +162,7 @@ void save_full_model(char* path, Model* pModel) {
 	// Save the whole square matrix
 	for (int j = 0; j < pModel->size; j++) {
 		for (int i = 0; i < pModel->size; i++) {
-			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel)]);
+			fprintf(pFile, "%.6f\t", pModel->weights[get_index(i, j, pModel->size)]);
 		}
 
 		fprintf(pFile, "\n");
@@ -174,7 +174,7 @@ void save_full_model(char* path, Model* pModel) {
 void print_model(Model* pModel) {
 	for (int j = 0; j < pModel->size; j++) {
 		for (int i = 0; i < pModel->size; i++) {
-			fprintf(stdout, "%f\t", pModel->weights[get_index(i, j, pModel)] );
+			fprintf(stdout, "%f\t", pModel->weights[get_index(i, j, pModel->size)] );
 		}
 		fprintf(stdout, "\n");
 	}
@@ -208,9 +208,9 @@ Model* memorize_pattern(Pattern* pPattern) {
 	for (int i = 0; i < pPattern->size; i++) {
 		for (int j = 0; j < pPattern->size; j++) {
 			if (i != j) {
-				pModel->weights[get_index(i, j, pModel)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
+				pModel->weights[get_index(i, j, pModel->size)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
 			} else {
-				pModel->weights[get_index(i, j, pModel)] = 0;
+				pModel->weights[get_index(i, j, pModel->size)] = 0;
 			}
 		}
 	}
@@ -223,7 +223,7 @@ Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
 
 	for (unsigned long i = 0; i < pPattern->size; i++) {
 		for (unsigned long j = 0; j < pPattern->size; j++) {
-			weightIndex = get_index(i, j, pModel);
+			weightIndex = get_index(i, j, pModel->size);
 			
 			if (i != j) {
 				pModel->weights[weightIndex] += (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
@@ -248,7 +248,7 @@ Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 			float sum = 0;
 
 			for (int j = 0; j < pModel->size; j++) {
-				sum += pModel->weights[get_index(randomIndexes[i], randomIndexes[j], pModel)] * pPattern->data[randomIndexes[j]];
+				sum += pModel->weights[get_index(randomIndexes[i], randomIndexes[j], pModel->size)] * pPattern->data[randomIndexes[j]];
 			}
 			
 			pPattern->data[randomIndexes[i]] = sgn(sum);

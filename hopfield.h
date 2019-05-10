@@ -11,6 +11,8 @@ typedef struct Pattern {
 	char* data;
 } Pattern;
 
+unsigned long get_index(unsigned long x, unsigned long y, unsigned long size);
+
 Model* create_model(unsigned long size);
 
 Model* load_model(char* path);
