@@ -15,6 +15,9 @@ int sgn(float input) {
 }
 
 Model* create_model(unsigned long size) {
+	void check_memory_allocation();
+	int test_new_model();
+
 	Model* pModel;
 	int testNewModelResult;
 
@@ -40,6 +43,9 @@ Model* create_model(unsigned long size) {
 }
 
 Model* load_full_model(char* path) {
+	Model* create_model();
+	void check_memory_allocation();
+
 	FILE* pFile;
 	Model* pModel;
 	float* pWeight;
@@ -88,6 +94,8 @@ Model* load_full_model(char* path) {
 }
 
 void save_full_model(char* path, Model* pModel) {
+	unsigned long get_index();
+
 	FILE* pFile;
 	unsigned long i;
 	unsigned long j;
@@ -139,11 +147,15 @@ int test_new_model(Model* pModel) {
 }
 
 Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
+	unsigned long get_index();
+
 	unsigned long weightIndex;
+	unsigned long i;
+	unsigned long j;
 	float weight;
 
-	for (unsigned long i = 0; i < pPattern->size; i++) {
-		for (unsigned long j = 0; j < pPattern->size; j++) {
+	for (i = 0; i < pPattern->size; i++) {
+		for (j = 0; j < pPattern->size; j++) {
 			weightIndex = get_index(i, j, pModel->size);
 			
 			if (i != j) {
@@ -159,6 +171,11 @@ Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
 }
 
 Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
+	Pattern* copy_pattern();
+	unsigned long* get_random_sequence();
+	unsigned long get_index();
+	int compare_patterns();
+
 	Pattern* pLastPattern;
 	unsigned long weightIndex;
 	unsigned long i;
@@ -189,6 +206,8 @@ Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 }
 
 Pattern* copy_pattern(Pattern* pPattern) {
+	Pattern* create_pattern();
+
 	Pattern* pCopiedPattern;
 	pCopiedPattern = create_pattern(pPattern->width, pPattern->height);
 	strcpy(pCopiedPattern->data, pPattern->data);
@@ -197,6 +216,8 @@ Pattern* copy_pattern(Pattern* pPattern) {
 }
 
 Pattern* create_pattern(unsigned long width, unsigned long height) {
+	void check_memory_allocation();
+
 	Pattern* pPattern;
 	unsigned long totalDataLength;
 
@@ -218,6 +239,9 @@ Pattern* create_pattern(unsigned long width, unsigned long height) {
 }
 
 Pattern* load_image(char* path) {
+	PBMImage* loadPBM();
+	Pattern* create_pattern();
+
 	FILE* pFile;
 	PBMImage* pImage;
 	Pattern* pPattern;
@@ -239,6 +263,8 @@ Pattern* load_image(char* path) {
 }
 
 void save_image(char* path, Pattern* pPattern) {
+	unsigned long get_index();
+
 	FILE* pFile;
 	unsigned long index;
 	unsigned long i;

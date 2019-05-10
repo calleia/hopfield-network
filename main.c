@@ -7,6 +7,11 @@
 #define MAX_FILENAME_LENGTH 1024
 
 void save(char** inputFilenameList, char* outputFilename) {
+	Pattern* load_image();
+	Model* create_model();
+	Model* memorize_patterns();
+	void save_full_model();
+
 	Model* pModel;
 	Pattern* pInputPattern;
 	int index;
@@ -38,6 +43,11 @@ void save(char** inputFilenameList, char* outputFilename) {
 }
 
 void retrieve(char* input_path, char* output_path, char* model_path) {
+	Pattern* load_image();
+	Pattern* retrieve_pattern();
+	Model* load_full_model();
+	void save_image();
+
 	Pattern* pPattern = load_image(input_path);
 
 	Model* pModel = load_full_model(model_path);
@@ -48,6 +58,10 @@ void retrieve(char* input_path, char* output_path, char* model_path) {
 }
 
 void readInputFile(FILE* pInputFile) {
+	void check_memory_allocation();
+	void save();
+	void retrieve();
+
 	char* option;
 	char* value;
 	char* mode;
@@ -127,6 +141,8 @@ void readInputFile(FILE* pInputFile) {
 }
 
 int main(int argc, char** argv) {
+	void readInputFile();
+	
 	FILE* pInputFile;
 
 	// Verify the number of command line arguments
