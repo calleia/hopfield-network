@@ -4,6 +4,8 @@
 #include <getopt.h>
 #include "hopfield.h"
 
+#define MAX_FILENAME_LENGTH 1024
+
 void memorize(char* input_path, char* output_path) {
 	Pattern* pPattern = load_image(input_path);
 
@@ -39,62 +41,95 @@ void retrieve(char* input_path, char* output_path, char* model_path) {
 	save_image(output_path, pRecovered);
 }
 
-int main(int argc, char** argv) {
-	// Options struct
-	static struct option long_options[] = {
-		{"output", required_argument, NULL, 'o'},
-		{NULL, 0, NULL, 0}
-	};
+void readInputFile(FILE* pInputFile) {
+	char* option;
+	char* value;
+	char* mode;
 
-	int option;
-	char* output_filename = "output.file";
+	char* modelFilename;
+	char* outputFilename;
+	char* inputFilename;
+	char** inputFilenameList;
+	int inputCount;
 
-	// Parsing options
-	while ((option = getopt_long(argc, argv, "o:", long_options, NULL)) != -1) {
-		switch (option) {
-			case 'o':
-				output_filename = optarg;
-				break;
-			default:
-				fprintf(stderr, "Invalid parameter.\n");
-				// TODO: call show_help()
-		}
-	}
+	option = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	value = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	mode = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	
+	modelFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	outputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	inputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	inputFilenameList = NULL;
+	inputCount = 0;
 
-	// Remaining args that are not options
-	if (optind < argc) {
-		if (strcmp("memorize", argv[optind]) == 0) {
-			if ((argc - optind) == 2) {
-				memorize(argv[++optind], output_filename);
-			} else if ((argc - optind) > 2) {
-				char** list;
-				list = malloc((argc - optind) * sizeof(*list));
+	// Read pairs of (tab separated) settings from input file
+	while (fscanf(pInputFile, "%s %s", option, value) == 2) {
 
-				int listCount = 0;
+		if (strcmp(option, "MODE") == 0) {
+			// Read MODE option value
+			strcpy(mode, value);
+		} else if (strcmp(option, "MODEL_FILENAME") == 0) {
+			// Read MODEL_FILENAME option value
+			strcpy(modelFilename, value);
+		} else if (strcmp(option, "OUTPUT_FILENAME") == 0) {
+			// Read OUTPUT_FILENAME option value
+			strcpy(outputFilename, value);
+		} else if (strcmp(option, "INPUT_FILENAME") == 0) {
+			inputCount++;
 
-				for (int i = optind + 1; i < argc; i++) {
-					list[listCount] = argv[i];
-					listCount++;
-				}
+			// Read INPUT_FILENAME option value
+			inputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+			strcpy(inputFilename, value);
 
-				list[listCount] = NULL;
-
-				memorize_many(list, output_filename);
-			} else {
-				fprintf(stderr, "No input was provided.\n");
-			}
-		} else if (strcmp("retrieve", argv[optind]) == 0) {
-			if ((argc - optind) == 3) {
-				retrieve(argv[optind + 1], output_filename, argv[optind + 2]);
-			} else {
-				fprintf(stderr, "You must provide an input and a model model.\n");
-			}
+			// Append INPUT_FILENAME to list of inputs
+			inputFilenameList = (char**) realloc(inputFilenameList, (inputCount + 1) * sizeof(char*));
+			inputFilenameList[inputCount - 1] = inputFilename;
 		} else {
-			fprintf(stderr, "Command '%s' not recognized.\n", argv[optind]);
+			// Log error & stop execution if input file has ANY invalid option  
+			fprintf(stderr, "Error: option %s from input file not recognized.\n", option);
+			return;
 		}
-	} else {
-		fprintf(stderr, "No command was provided.\n");
 	}
+
+	// Set the end of the pointer
+	inputFilenameList[inputCount] = NULL;
+
+	// Verify execution mode value
+	if (strcmp(mode, "save") == 0) {
+		memorize_many(inputFilenameList, outputFilename);
+	} else if (strcmp(mode, "retrieve") == 0) {
+		retrieve(inputFilename, outputFilename, modelFilename);
+	} else {
+		fprintf(stderr, "Error: could not recognize execution mode \'%s\'\n", mode);
+	}
+
+	// Free memory
+	free(option);
+	free(value);
+	free(mode);
+}
+
+int main(int argc, char** argv) {
+	FILE* pInputFile;
+
+	// Verify the number of command line arguments
+	if (argc != 2) {
+		fprintf(stdout, "Error: wrong number of command line arguments.\n");
+		return 0;
+	}
+
+	// Open input file
+	pInputFile = fopen(argv[1], "r");
+
+	// Verify if file was properly open and read it in case of success
+	if (pInputFile == NULL) {
+		fprintf(stderr, "Error: could not find input file %s\n", argv[1]);
+	} else {
+		readInputFile(pInputFile);
+	}
+
+	// Close input file
+	fclose(pInputFile);
 
 	return 0;
 }
