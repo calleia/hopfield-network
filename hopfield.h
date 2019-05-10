@@ -13,6 +13,8 @@ typedef struct Pattern {
 
 unsigned long get_index(unsigned long x, unsigned long y, unsigned long size);
 
+int sgn(float input);
+
 Model* create_model(unsigned long size);
 
 Model* load_model(char* path);
