@@ -273,7 +273,7 @@ Pattern* create_pattern(unsigned long width, unsigned long height) {
 	pPattern->size = width * height;
 	pPattern->width = width;
 	pPattern->height = height;
-	
+
 	totalDataLength = pPattern->size + 1;
 	pPattern->data = (char*) malloc(totalDataLength * sizeof(char));
 
@@ -284,15 +284,21 @@ Pattern* create_pattern(unsigned long width, unsigned long height) {
 }
 
 Pattern* load_image(char* path) {
-	FILE *pFile = fopen(path, "rb");
-	PBMImage* pImage = loadPBM(pFile);
-	fclose(pFile);
+	FILE* pFile;
+	PBMImage* pImage;
+	Pattern* pPattern;
+	char unit;
 
-	Pattern* pPattern = create_pattern(pImage->width, pImage->height);
+	pFile = fopen(path, "rb");
+	pImage = loadPBM(pFile);
+	pPattern = create_pattern(pImage->width, pImage->height);
 
 	for (int i = 0; i < pPattern->size; i++) {
-		pPattern->data[i] = pImage->data[i] == '1' ? 1 : -1;
+		unit = pImage->data[i] == '1' ? 1 : -1;
+		pPattern->data[i] = unit;
 	}
+
+	fclose(pFile);
 	
 	return pPattern;
 }
