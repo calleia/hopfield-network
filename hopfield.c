@@ -15,16 +15,23 @@ int sgn(float input) {
 }
 
 Model* create_model(unsigned long size) {
-	Model* pModel = (Model*) malloc(sizeof(Model));
+	Model* pModel;
+	int testNewModelResult;
+
+	// Allocate memory for model struct
+	pModel = (Model*) malloc(sizeof(Model));
 	pModel->size = size;
 	pModel->weights = (float*) calloc(size * size, sizeof(float));
 
-	int testResult = test_new_model(pModel);
-	if (testResult == 1) {
+	// Test if memory allocation was successful
+	testNewModelResult = test_new_model(pModel);
+
+	if (testNewModelResult == 1) {
 		fprintf(stderr, "Error: an error ocurred while creating a model.\n");
 		exit(0);
 	}
 
+	// Return new empty model
 	return pModel;
 }
 
