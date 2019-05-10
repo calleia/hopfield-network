@@ -266,12 +266,16 @@ Pattern* copy_pattern(Pattern* pPattern) {
 }
 
 Pattern* create_pattern(unsigned long width, unsigned long height) {
-	Pattern* pPattern = (Pattern*) malloc(sizeof(Pattern));
+	Pattern* pPattern;
+	unsigned long totalDataLength;
+
+	pPattern = (Pattern*) malloc(sizeof(Pattern));
 	pPattern->size = width * height;
 	pPattern->width = width;
 	pPattern->height = height;
-
-	pPattern->data = (char*) malloc((pPattern->size + 1) * sizeof(char));
+	
+	totalDataLength = pPattern->size + 1;
+	pPattern->data = (char*) malloc(totalDataLength * sizeof(char));
 
 	// Make pPattern->data NULL terminated
 	pPattern->data[pPattern->size] = 0;
