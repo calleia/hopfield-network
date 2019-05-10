@@ -209,22 +209,6 @@ int test_new_model(Model* pModel) {
 	return 0;
 }
 
-Model* memorize_pattern(Pattern* pPattern) {
-	Model* pModel = create_model(pPattern->size);
-
-	for (int i = 0; i < pPattern->size; i++) {
-		for (int j = 0; j < pPattern->size; j++) {
-			if (i != j) {
-				pModel->weights[get_index(i, j, pModel->size)] = (pPattern->data[i] * pPattern->data[j]) / (float) pPattern->size;
-			} else {
-				pModel->weights[get_index(i, j, pModel->size)] = 0;
-			}
-		}
-	}
-
-	return pModel;
-}
-
 Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
 	unsigned long weightIndex = 0;
 
