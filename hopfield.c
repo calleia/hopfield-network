@@ -14,26 +14,6 @@ int sgn(float input) {
 	return input < 0 ? -1 : 1;
 }
 
-Model* add_models(Model* pFirstModel, Model* pSecondModel) {
-	if (pFirstModel == NULL && pSecondModel != NULL) {
-		return pSecondModel;
-	} else if (pFirstModel != NULL && pSecondModel == NULL) {
-		return pFirstModel;
-	}
-	
-	Model* pModel = (Model*) malloc(sizeof(Model));
-	pModel->size = pFirstModel->size;
-	pModel->weights = (float*) calloc(pModel->size * pModel->size, sizeof(float));
-
-	for (int j = 0; j < pModel->size; j++) {
-		for (int i = 0; i < pModel->size; i++) {
-			pModel->weights[get_index(i, j, pModel)] = pFirstModel->weights[get_index(i, j, pFirstModel)] + pSecondModel->weights[get_index(i, j, pSecondModel)];
-		}
-	}
-
-	return pModel;
-}
-
 Model* create_model(unsigned long size) {
 	Model* pModel = (Model*) malloc(sizeof(Model));
 	pModel->size = size;

@@ -11,8 +11,6 @@ typedef struct Pattern {
 	char* data;
 } Pattern;
 
-Model* add_models(Model* pFirstModel, Model* pSecondModel);
-
 Model* create_model(unsigned long size);
 
 Model* load_model(char* path);
