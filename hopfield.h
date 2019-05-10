@@ -17,8 +17,6 @@ int sgn(float input);
 
 Model* create_model(unsigned long size);
 
-Model* load_model(char* path);
-
 Model* load_full_model(char* path);
 
 void save_model(char* path, Model* pModel);
