@@ -82,6 +82,8 @@ Model* load_full_model(char* path) {
 
 void save_full_model(char* path, Model* pModel) {
 	FILE* pFile;
+	unsigned long i;
+	unsigned long j;
 	unsigned long weightIndex;
 
 	// Create model file
@@ -91,8 +93,8 @@ void save_full_model(char* path, Model* pModel) {
 	fprintf(pFile, "%lu\n", pModel->size);
 
 	// Save the whole square matrix of weights
-	for (int j = 0; j < pModel->size; j++) {
-		for (int i = 0; i < pModel->size; i++) {
+	for (j = 0; j < pModel->size; j++) {
+		for (i = 0; i < pModel->size; i++) {
 			// Calculate current weight index
 			weightIndex = get_index(i, j, pModel->size);
 
@@ -108,6 +110,7 @@ void save_full_model(char* path, Model* pModel) {
 
 int test_new_model(Model* pModel) {
 	unsigned long totalSize;
+	unsigned long i;
 
 	if (pModel ==  NULL)
 		return 1;
@@ -120,7 +123,7 @@ int test_new_model(Model* pModel) {
 
 	totalSize = pModel->size * pModel->size;
 
-	for (int i = 0; i < totalSize; i++) {
+	for (i = 0; i < totalSize; i++) {
 		if (pModel->weights[i] != 0.0)
 			return 1;
 	}
@@ -151,6 +154,8 @@ Model* memorize_patterns(Pattern* pPattern, Model* pModel) {
 Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 	Pattern* pLastPattern;
 	unsigned long weightIndex;
+	unsigned long i;
+	unsigned long j;
 	int isTheSamePattern;
 	float sum;
 
@@ -159,10 +164,10 @@ Pattern* retrieve_pattern(Pattern* pPattern, Model* pModel) {
 
 		unsigned long* randomIndexes = get_random_sequence(pModel->size);
 
-		for (int i = 0; i < pModel->size; i++) {
+		for (i = 0; i < pModel->size; i++) {
 			sum = 0;
 
-			for (int j = 0; j < pModel->size; j++) {
+			for (j = 0; j < pModel->size; j++) {
 				weightIndex = get_index(randomIndexes[i], randomIndexes[j], pModel->size);
 				sum += pModel->weights[weightIndex] * pPattern->data[randomIndexes[j]];
 			}
@@ -206,15 +211,16 @@ Pattern* load_image(char* path) {
 	FILE* pFile;
 	PBMImage* pImage;
 	Pattern* pPattern;
+	unsigned long index;
 	char unit;
 
 	pFile = fopen(path, "rb");
 	pImage = loadPBM(pFile);
 	pPattern = create_pattern(pImage->width, pImage->height);
 
-	for (int i = 0; i < pPattern->size; i++) {
-		unit = pImage->data[i] == '1' ? 1 : -1;
-		pPattern->data[i] = unit;
+	for (index = 0; index < pPattern->size; index++) {
+		unit = pImage->data[index] == '1' ? 1 : -1;
+		pPattern->data[index] = unit;
 	}
 
 	fclose(pFile);
@@ -225,6 +231,8 @@ Pattern* load_image(char* path) {
 void save_image(char* path, Pattern* pPattern) {
 	FILE* pFile;
 	unsigned long index;
+	unsigned long i;
+	unsigned long j;
 	char binaryPixel;
 
 	// Create PBM image file
@@ -234,8 +242,8 @@ void save_image(char* path, Pattern* pPattern) {
 	fprintf(pFile, "P1\n%lu %lu\n", pPattern->width, pPattern->height);
 
 	// Write image data to PBM file
-	for (int j = 0; j < pPattern->height; j++) {
-		for (int i = 0; i < pPattern->width; i++) {
+	for (j = 0; j < pPattern->height; j++) {
+		for (i = 0; i < pPattern->width; i++) {
 			index = get_index(i, j, pPattern->height);
 			binaryPixel = pPattern->data[index] == 1 ? '1' : '0';
 
