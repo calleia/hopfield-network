@@ -187,15 +187,6 @@ void save_full_model(char* path, Model* pModel) {
 	fclose(pFile);
 }
 
-void print_model(Model* pModel) {
-	for (int j = 0; j < pModel->size; j++) {
-		for (int i = 0; i < pModel->size; i++) {
-			fprintf(stdout, "%f\t", pModel->weights[get_index(i, j, pModel->size)] );
-		}
-		fprintf(stdout, "\n");
-	}
-}
-
 int test_new_model(Model* pModel) {
 	unsigned long totalSize;
 
