@@ -48,12 +48,14 @@ void retrieve(char* input_path, char* output_path, char* model_path) {
 	Model* load_full_model();
 	void save_image();
 
-	Pattern* pPattern = load_image(input_path);
+	Pattern* pPattern;
+	Pattern* pRecovered;
+	Model* pModel;
 
-	Model* pModel = load_full_model(model_path);
-
-	Pattern* pRecovered = retrieve_pattern(pPattern, pModel);
-
+	pPattern = load_image(input_path);
+	pModel = load_full_model(model_path);
+	pRecovered = retrieve_pattern(pPattern, pModel);
+	
 	save_image(output_path, pRecovered);
 }
 
@@ -142,7 +144,7 @@ void readInputFile(FILE* pInputFile) {
 
 int main(int argc, char** argv) {
 	void readInputFile();
-	
+
 	FILE* pInputFile;
 
 	// Verify the number of command line arguments
