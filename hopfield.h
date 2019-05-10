@@ -39,8 +39,6 @@ Pattern* load_image(char* path);
 
 void save_image(char* path, Pattern* pPattern);
 
-void print_pattern(Pattern* pPattern);
-
 int compare_patterns(Pattern* pFirstPattern, Pattern* pSecondPattern);
 
 #endif
