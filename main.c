@@ -6,6 +6,13 @@
 
 #define MAX_FILENAME_LENGTH 1024
 
+// Execution modes
+#define STORE 0
+#define RETRIEVE 1
+#define STORE_AND_RETRIEVE 2
+
+int executionMode;
+
 void save(char** inputFilenameList, char* outputFilename) {
 	Pattern* load_image();
 	Model* create_model();
@@ -143,28 +150,23 @@ void readInputFile(FILE* pInputFile) {
 }
 
 int main(int argc, char** argv) {
-	void readInputFile();
+	// TODO: input network parameters
 
-	FILE* pInputFile;
-
-	// Verify the number of command line arguments
-	if (argc != 2) {
-		fprintf(stdout, "Error: wrong number of command line arguments.\n");
-		return 0;
+	if (executionMode == STORE || executionMode == STORE_AND_RETRIEVE) {
+		// TODO: input stored patterns
+		// TODO: calculate weights
+		// TODO: store weights
 	}
 
-	// Open input file
-	pInputFile = fopen(argv[1], "r");
-
-	// Verify if file was properly open and read it in case of success
-	if (pInputFile == NULL) {
-		fprintf(stderr, "Error: could not find input file %s\n", argv[1]);
-	} else {
-		readInputFile(pInputFile);
+	if (executionMode == RETRIEVE) {
+		// TODO: input weights
 	}
 
-	// Close input file
-	fclose(pInputFile);
+	if (executionMode == RETRIEVE || executionMode == STORE_AND_RETRIEVE) {
+		// TODO: input initial network state
+		// TODO: calculate stored pattern
+		// TODO: output stored pattern
+	}
 
 	return 0;
 }
