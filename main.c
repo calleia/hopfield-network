@@ -290,6 +290,21 @@ void input_stored_patterns(FILE* pSettingsFile) {
 	}
 }
 
+void print_all_training_set() {
+	for (int j = 0; j < trainingSetSize; j++) {
+
+		for (int i = 0; i < nNeurons; i++) {
+			if (i % 5 == 0) {
+				fprintf(stdout, "\n");
+			}
+
+			fprintf(stdout, "%c ", pTrainingSet[j][i]);
+		}
+
+		fprintf(stdout, "\n");
+	}
+}
+
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
@@ -300,6 +315,7 @@ int main(int argc, char** argv) {
 	if (executionMode == STORE || executionMode == STORE_AND_RETRIEVE) {
 		// Input stored patterns
 		input_stored_patterns(pSettingsFile);
+
 		// TODO: calculate weights
 		// TODO: store weights
 	}
