@@ -5,6 +5,7 @@
 #include "hopfield.h"
 
 #define MAX_FILENAME_LENGTH 1024
+#define SETTINGS_FILENAME "settings.tsv"
 
 // Execution modes
 #define STORE 0
@@ -12,6 +13,10 @@
 #define STORE_AND_RETRIEVE 2
 
 int executionMode;
+unsigned long nNeurons;
+int trainingSetSize;
+
+char** pTrainingSet;
 
 void save(char** inputFilenameList, char* outputFilename) {
 	Pattern* load_image();
@@ -149,11 +154,152 @@ void readInputFile(FILE* pInputFile) {
 	free(mode);
 }
 
+void input_network_parameters(FILE* pSettingsFile) {
+	if (pSettingsFile == NULL) {
+		fprintf(stderr, "Error: input settings file could not be found.\n");
+		exit(0);
+	}
+
+	fscanf(pSettingsFile, "%*s\t%d\n%*s\t%lu", &executionMode, &nNeurons);
+}
+
+char* load_pbm_image(char* filename) {
+	FILE* pImageFile;
+
+	char* header;
+	char* character;
+	char* pattern;
+	char* pWidthString;
+	char* pHeightString;
+
+	size_t patternSize;
+	size_t widthLength;
+	size_t heightLength;
+	size_t width;
+	size_t height;
+
+	pImageFile = fopen(filename, "r");
+
+	if (pImageFile == NULL) {
+		fprintf(stderr, "Error: could not load image file \'%s\'.\n", filename);
+		exit(0);
+	}
+
+	// Read Header
+	header = (char*) malloc(2 * sizeof(char));
+	fread(header, 1, 2, pImageFile);
+
+	if (header[0] != 'P' || header[1] != '1') {
+		fprintf(stderr, "Error: could not recognize image file format \'%s\'.\n", filename);
+		return NULL;
+	}
+
+	character = (char*) malloc(sizeof(char));
+
+	// Skip blanks
+	do {
+		fread(character, 1, 1, pImageFile);
+	} while (*character == ' ' || *character == '\t' || *character == '\n');
+
+	// Skip comments
+	while (*character == '#') {
+		do {
+			fread(character, 1, 1, pImageFile);
+		} while (*character != '\n');
+
+		// Skip blanks
+		do {
+			fread(character, 1, 1, pImageFile);
+		} while (*character == ' ' || *character == '\t' || *character == '\n');
+	}
+
+	// Read Size
+	widthLength = 0;
+	pWidthString = NULL;
+
+	do {
+		widthLength++;
+		pWidthString = (char*) realloc(pWidthString, widthLength + 1);
+		pWidthString[widthLength - 1] = *character;
+		fread(character, 1, 1, pImageFile);
+	} while (*character != ' ' && *character != '\t');
+
+	// Null terminating string
+	pWidthString[widthLength] = 0;
+
+	// Skip spaces
+	while (*character == ' ' || *character == '\t') {
+		fread(character, 1, 1, pImageFile);
+	}
+
+	heightLength = 0;
+	pHeightString = NULL;
+
+	do {
+		heightLength++;
+		pHeightString = (char*) realloc(pHeightString, heightLength + 1);
+		pHeightString[heightLength - 1] = *character;
+		fread(character, 1, 1, pImageFile);
+	} while (*character != '\n');
+
+	// Null terminating string
+	pHeightString[heightLength] = 0;
+
+	// Read Data
+	patternSize = 0;
+	pattern = NULL;
+
+	while (fread(character, 1, 1, pImageFile) == 1) {
+		if (*character == '0' || *character == '1') {
+			patternSize++;
+			pattern = (char*) realloc(pattern, patternSize);
+			pattern[patternSize - 1] = *character;
+		}
+	}
+
+	width = strtoul(pWidthString, NULL, 10);
+	height = strtoul(pHeightString, NULL, 10);
+
+	// Make sure the parsing worked otherwise return NULL
+	if (patternSize == width * height) {
+		return pattern;
+	} else {
+		fprintf(stderr, "Error: wrong data size in image file \'%s\'.\n", filename);
+		return NULL;
+	}
+}
+
+void input_stored_patterns(FILE* pSettingsFile) {
+	unsigned long totalSize;
+	char* pInputFilename;
+	char* pInputPattern;
+
+	fscanf(pSettingsFile, "%*s\t%d", &trainingSetSize);
+
+	totalSize = trainingSetSize * nNeurons;
+
+	pTrainingSet = (char**) malloc(totalSize * sizeof(char*));
+
+	pInputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char*));
+
+	int i;
+	for (i = 0; i < trainingSetSize; i++) {
+		fscanf(pSettingsFile, "%*s %s", pInputFilename);
+		pInputPattern = load_pbm_image(pInputFilename);
+		pTrainingSet[i] = pInputPattern;
+	}
+}
+
 int main(int argc, char** argv) {
-	// TODO: input network parameters
+	FILE* pSettingsFile;
+	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
+
+	// Input network parameters
+	input_network_parameters(pSettingsFile);
 
 	if (executionMode == STORE || executionMode == STORE_AND_RETRIEVE) {
-		// TODO: input stored patterns
+		// Input stored patterns
+		input_stored_patterns(pSettingsFile);
 		// TODO: calculate weights
 		// TODO: store weights
 	}
@@ -164,9 +310,11 @@ int main(int argc, char** argv) {
 
 	if (executionMode == RETRIEVE || executionMode == STORE_AND_RETRIEVE) {
 		// TODO: input initial network state
-		// TODO: calculate stored pattern
+		// TODO: retrieve stored pattern
 		// TODO: output stored pattern
 	}
+
+	fclose(pSettingsFile);
 
 	return 0;
 }
