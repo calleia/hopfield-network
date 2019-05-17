@@ -224,6 +224,16 @@ void retrieve_stored_pattern() {
 	free(lastS);
 }
 
+void output_stored_pattern(FILE* pSettingsFile) {
+	char* pOutputFilename;
+
+	pOutputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	fscanf(pSettingsFile, "%*s\t%s", pOutputFilename);
+	save_pbm_image(pOutputFilename, nNeurons, nNeurons, s);
+
+	free(pOutputFilename);
+}
+
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
@@ -253,7 +263,9 @@ int main(int argc, char** argv) {
 
 		// Retrieve stored pattern
 		retrieve_stored_pattern();
-		// TODO: output stored pattern
+
+		// Output stored pattern
+		output_stored_pattern(pSettingsFile);
 	}
 
 	fclose(pSettingsFile);
