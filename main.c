@@ -272,6 +272,11 @@ void input_weights(char* pFilename) {
 	float* pWeight;
 	unsigned long* pModelSize;
 	unsigned long weightCount;
+	unsigned long totalWeightCount;
+
+	totalWeightCount = nNeurons * nNeurons;
+	w = (float*) calloc(totalWeightCount, sizeof(float));
+	//check_memory_allocation()
 
 	pWeight = malloc(sizeof(float));
 	//check_memory_allocation(pWeight, "pWeight", "load_full_model()");
@@ -303,7 +308,7 @@ void input_weights(char* pFilename) {
 		weightCount++;
 	}
 
-	if (weightCount != nNeurons * nNeurons) {
+	if (weightCount != totalWeightCount) {
 		fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
 	}
 
