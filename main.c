@@ -19,6 +19,7 @@ unsigned long nNeurons;
 int trainingSetSize;
 
 float* w;
+char* s;
 char** pTrainingSet;
 
 void save(char** inputFilenameList, char* outputFilename) {
@@ -268,7 +269,6 @@ void store_weights(char* filename) {
 
 void input_weights(char* pFilename) {
 	FILE* pFile;
-	Model* pModel;
 	float* pWeight;
 	unsigned long* pModelSize;
 	unsigned long weightCount;
@@ -318,6 +318,16 @@ void input_weights(char* pFilename) {
 	free(pModelSize);
 }
 
+void input_initial_network_state(FILE* pSettingsFile) {
+	char* pInputFilename;
+
+	pInputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char*));
+	fscanf(pSettingsFile, "%*s %s", pInputFilename);
+	s = load_pbm_image(pInputFilename);
+
+	free(pInputFilename);
+}
+
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
@@ -342,7 +352,9 @@ int main(int argc, char** argv) {
 	}
 
 	if (executionMode == RETRIEVE || executionMode == STORE_AND_RETRIEVE) {
-		// TODO: input initial network state
+		// Input initial network state
+		input_initial_network_state(pSettingsFile);
+
 		// TODO: retrieve stored pattern
 		// TODO: output stored pattern
 	}
