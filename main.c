@@ -266,6 +266,53 @@ void store_weights(char* filename) {
 	fclose(pFile);
 }
 
+void input_weights(char* pFilename) {
+	FILE* pFile;
+	Model* pModel;
+	float* pWeight;
+	unsigned long* pModelSize;
+	unsigned long weightCount;
+
+	pWeight = malloc(sizeof(float));
+	//check_memory_allocation(pWeight, "pWeight", "load_full_model()");
+
+	pModelSize = malloc(sizeof(unsigned long));
+	//check_memory_allocation(pModelSize, "pModelSize", "load_full_model()");
+
+	pFile = fopen(pFilename, "r");
+
+	// Read model size from file (total weight count == size^2)
+	if (fscanf(pFile, "%ld", pModelSize) == EOF) {
+		fprintf(stderr, "%s\n", "Could not read model size.");
+	}
+
+	if (*pModelSize != nNeurons) {
+		fprintf(stderr, "%s\n", "Wrong number of weights in model file.");
+	}
+
+	weightCount = 0;
+
+	// Read weights from file
+	while (fscanf(pFile, "%f", pWeight) != EOF) {
+		if (weightCount >= nNeurons * nNeurons) {
+			fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
+			break;
+		}
+
+		w[weightCount] = *pWeight;
+		weightCount++;
+	}
+
+	if (weightCount != nNeurons * nNeurons) {
+		fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
+	}
+
+	// Freeing allocated memory
+	fclose(pFile);
+	free(pWeight);
+	free(pModelSize);
+}
+
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
@@ -285,7 +332,8 @@ int main(int argc, char** argv) {
 	}
 
 	if (executionMode == RETRIEVE) {
-		// TODO: input weights
+		// Input weights
+		input_weights(WEIGHTS_FILENAME);
 	}
 
 	if (executionMode == RETRIEVE || executionMode == STORE_AND_RETRIEVE) {
