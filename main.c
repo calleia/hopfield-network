@@ -21,6 +21,10 @@ float* w;
 char* s;
 char** pTrainingSet;
 
+int sgn(double value) {
+	return value < 0 ? -1 : 1;
+}
+
 void input_network_parameters(FILE* pSettingsFile) {
 	if (pSettingsFile == NULL) {
 		fprintf(stderr, "Error: input settings file could not be found.\n");
@@ -191,6 +195,35 @@ void input_initial_network_state(FILE* pSettingsFile) {
 	free(pInputFilename);
 }
 
+void retrieve_stored_pattern() {
+	char* lastS;
+	int i;
+	int j;
+	int index;
+	double sum;
+
+	lastS = (char*) malloc(nNeurons * sizeof(char));
+
+	do {
+		// Create a copy of the network state s
+		for (i = 0; i < nNeurons; i++)
+			lastS[i] = s[i];
+
+		for (j = 0; j < nNeurons; j++) {
+			sum = 0.0;
+
+			for (i = 0; i < nNeurons; i++) {
+				index = j * nNeurons + i;
+				sum += w[index] * s[i];
+			}
+
+			s[j] = sgn(sum);
+		}
+	} while (strcmp(s, lastS) != 0);
+
+	free(lastS);
+}
+
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
@@ -218,7 +251,8 @@ int main(int argc, char** argv) {
 		// Input initial network state
 		input_initial_network_state(pSettingsFile);
 
-		// TODO: retrieve stored pattern
+		// Retrieve stored pattern
+		retrieve_stored_pattern();
 		// TODO: output stored pattern
 	}
 
