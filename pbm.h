@@ -10,4 +10,6 @@ PBMImage* loadPBM(FILE* pFile);
 
 char* load_pbm_image(char* filename);
 
+void save_pbm_image(char* filename, unsigned long width, unsigned long height, char* pixels);
+
 #endif

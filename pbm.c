@@ -196,3 +196,31 @@ char* load_pbm_image(char* filename) {
 		return NULL;
 	}
 }
+
+void save_pbm_image(char* filename, unsigned long width, unsigned long height, char* pixels) {
+	FILE* pFile;
+	unsigned long index;
+	unsigned long i;
+	unsigned long j;
+	char binaryPixel;
+
+	// Create PBM image file
+	pFile = fopen(filename, "w");
+
+	// Write image width & height to PBM file
+	fprintf(pFile, "P1\n%lu %lu\n", width, height);
+
+	// Write image data to PBM file
+	for (j = 0; j < height; j++) {
+		for (i = 0; i < width; i++) {
+			index = j * height + i;
+
+			// Write each binary pixel to PBM file
+			fprintf(pFile, "%c ", pixels[index]);
+		}
+
+		fprintf(pFile, "\n");
+	}
+
+	fclose(pFile);
+}
