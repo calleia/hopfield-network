@@ -7,6 +7,7 @@
 
 #define MAX_FILENAME_LENGTH 1024
 #define SETTINGS_FILENAME "settings.tsv"
+#define WEIGHTS_FILENAME "weights.hn"
 
 // Execution modes
 #define STORE 0
@@ -237,6 +238,34 @@ void calculate_weights() {
 	}
 }
 
+void store_weights(char* filename) {
+	FILE* pFile;
+	unsigned long i;
+	unsigned long j;
+	unsigned long index;
+
+	// Create weights file
+	pFile = fopen(filename, "w");
+
+	// Write the network size in the weights file
+	fprintf(pFile, "%lu\n", nNeurons);
+
+	// Save the whole square matrix of weights
+	for (j = 0; j < nNeurons; j++) {
+		for (i = 0; i < nNeurons; i++) {
+			// Calculate current weight index
+			index = j * nNeurons + i;
+
+			// Write current weight in the model file
+			fprintf(pFile, "%.6f\t", w[index]);
+		}
+
+		fprintf(pFile, "\n");
+	}
+
+	fclose(pFile);
+}
+
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
@@ -251,7 +280,8 @@ int main(int argc, char** argv) {
 		// Calculate weights
 		calculate_weights();
 
-		// TODO: store weights
+		// Store weights
+		store_weights(WEIGHTS_FILENAME);
 	}
 
 	if (executionMode == RETRIEVE) {
