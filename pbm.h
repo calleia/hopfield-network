@@ -8,4 +8,6 @@ typedef struct PBMImage {
 
 PBMImage* loadPBM(FILE* pFile);
 
+char* load_pbm_image(char* filename);
+
 #endif
