@@ -306,6 +306,18 @@ void print_all_training_set() {
 	}
 }
 
+void print_all_weights() {
+	unsigned long i;
+	unsigned long j;
+
+	for (j = 0; j < nNeurons; j++) {
+		for (i = 0; i < nNeurons; i++) {
+			fprintf(stdout, "%f ", w[j * nNeurons + i]);
+		}
+		fprintf(stdout, "\n");
+	}
+}
+
 void calculate_weights() {
 	unsigned long i;
 	unsigned long j;
