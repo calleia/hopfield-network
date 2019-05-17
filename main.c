@@ -16,6 +16,7 @@ int executionMode;
 unsigned long nNeurons;
 int trainingSetSize;
 
+float* w;
 char** pTrainingSet;
 
 void save(char** inputFilenameList, char* outputFilename) {
@@ -305,6 +306,30 @@ void print_all_training_set() {
 	}
 }
 
+void calculate_weights() {
+	unsigned long i;
+	unsigned long j;
+	unsigned long k;
+	unsigned long weightCount;
+
+	weightCount = nNeurons * nNeurons;
+
+	w = (float*) calloc(weightCount, sizeof(float));
+
+	for (k = 0; k < trainingSetSize; k++) {
+		for (j = 0; j < nNeurons; j++) {
+			for (i = 0; i < nNeurons; i++) {
+				if (i != j)
+					w[j * nNeurons + i] += pTrainingSet[k][i] * pTrainingSet[k][j];
+			}
+		}
+	}
+
+	for (i = 0; i < weightCount; i++) {
+		w[i] = w[i] / (float) nNeurons;
+	}
+}
+
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
@@ -316,7 +341,9 @@ int main(int argc, char** argv) {
 		// Input stored patterns
 		input_stored_patterns(pSettingsFile);
 
-		// TODO: calculate weights
+		// Calculate weights
+		calculate_weights();
+
 		// TODO: store weights
 	}
 
