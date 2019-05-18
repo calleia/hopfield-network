@@ -105,6 +105,7 @@ char* load_pbm_image(char* filename) {
 	size_t heightLength;
 	size_t width;
 	size_t height;
+	size_t index;
 
 	pImageFile = fopen(filename, "r");
 
@@ -190,6 +191,10 @@ char* load_pbm_image(char* filename) {
 
 	// Make sure the parsing worked otherwise return NULL
 	if (patternSize == width * height) {
+		for (index = 0; index < patternSize; index++) {
+			pattern[index] = pattern[index] == '1' ? 1 : -1;
+		}
+
 		return pattern;
 	} else {
 		fprintf(stderr, "Error: wrong data size in image file \'%s\'.\n", filename);
@@ -215,8 +220,10 @@ void save_pbm_image(char* filename, unsigned long width, unsigned long height, c
 		for (i = 0; i < width; i++) {
 			index = j * height + i;
 
+			binaryPixel = pixels[index] == 1 ? '1' : '0';
+
 			// Write each binary pixel to PBM file
-			fprintf(pFile, "%c ", pixels[index]);
+			fprintf(pFile, "%c ", binaryPixel);
 		}
 
 		fprintf(pFile, "\n");
