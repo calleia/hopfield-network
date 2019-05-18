@@ -200,7 +200,7 @@ void retrieve_stored_pattern() {
 	int i;
 	int j;
 	int index;
-	double sum;
+	double h;
 
 	lastS = (char*) malloc(nNeurons * sizeof(char));
 
@@ -210,14 +210,14 @@ void retrieve_stored_pattern() {
 			lastS[i] = s[i];
 
 		for (j = 0; j < nNeurons; j++) {
-			sum = 0.0;
+			h = 0.0;
 
 			for (i = 0; i < nNeurons; i++) {
 				index = j * nNeurons + i;
-				sum += w[index] * s[i];
+				h += w[index] * s[i];
 			}
 
-			s[j] = sgn(sum);
+			s[j] = sgn(h);
 		}
 	} while (strcmp(s, lastS) != 0);
 
@@ -229,7 +229,10 @@ void output_stored_pattern(FILE* pSettingsFile) {
 
 	pOutputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
 	fscanf(pSettingsFile, "%*s\t%s", pOutputFilename);
-	save_pbm_image(pOutputFilename, nNeurons, nNeurons, s);
+
+	// TODO: fix width & height values
+	//save_pbm_image(pOutputFilename, nNeurons, nNeurons, s);
+	save_pbm_image(pOutputFilename, 5, 5, s);
 
 	free(pOutputFilename);
 }
