@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "pbm.h"
 
+unsigned long width;
+unsigned long height;
+
 PBMImage* loadPBM(FILE* pFile) {
 
 	// Read Header
@@ -103,8 +106,6 @@ char* load_pbm_image(char* filename) {
 	size_t patternSize;
 	size_t widthLength;
 	size_t heightLength;
-	size_t width;
-	size_t height;
 	size_t index;
 
 	pImageFile = fopen(filename, "r");
@@ -202,7 +203,7 @@ char* load_pbm_image(char* filename) {
 	}
 }
 
-void save_pbm_image(char* filename, unsigned long width, unsigned long height, char* pixels) {
+void save_pbm_image(char* filename, char* pixels) {
 	FILE* pFile;
 	unsigned long index;
 	unsigned long i;

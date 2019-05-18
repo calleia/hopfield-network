@@ -229,10 +229,7 @@ void output_stored_pattern(FILE* pSettingsFile) {
 
 	pOutputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
 	fscanf(pSettingsFile, "%*s\t%s", pOutputFilename);
-
-	// TODO: fix width & height values
-	//save_pbm_image(pOutputFilename, nNeurons, nNeurons, s);
-	save_pbm_image(pOutputFilename, 5, 5, s);
+	save_pbm_image(pOutputFilename, s);
 
 	free(pOutputFilename);
 }
