@@ -22,14 +22,14 @@ unsigned long nNeurons;
 int trainingSetSize;
 
 float* w;
-char* s;
-char** pTrainingSet;
+int* s;
+int** pTrainingSet;
 
 int sgn(double value) {
 	return value < 0 ? -1 : 1;
 }
 
-int compare_states(char* s0, char* s1) {
+int compare_states(int* s0, int* s1) {
 	unsigned long index;
 
 	for (index = 0; index < nNeurons; index++)
@@ -51,13 +51,13 @@ void input_network_parameters(FILE* pSettingsFile) {
 void input_stored_patterns(FILE* pSettingsFile) {
 	unsigned long totalSize;
 	char* pInputFilename;
-	char* pInputPattern;
+	int* pInputPattern;
 
 	fscanf(pSettingsFile, "%*s\t%d", &trainingSetSize);
 
 	totalSize = trainingSetSize * nNeurons;
 
-	pTrainingSet = (char**) malloc(totalSize * sizeof(char*));
+	pTrainingSet = (int**) malloc(totalSize * sizeof(int*));
 
 	pInputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char*));
 
@@ -210,13 +210,13 @@ void input_initial_network_state(FILE* pSettingsFile) {
 }
 
 void retrieve_stored_pattern() {
-	char* lastS;
+	int* lastS;
 	int i;
 	int j;
 	int index;
 	double h;
 
-	lastS = (char*) malloc(nNeurons * sizeof(char));
+	lastS = (int*) malloc(nNeurons * sizeof(int));
 
 	do {
 		// Create a copy of the network state s
@@ -233,7 +233,7 @@ void retrieve_stored_pattern() {
 
 			s[j] = sgn(h);
 		}
-	} while (strcmp(s, lastS) != 0);
+	} while (compare_states(s, lastS) == DIFFERENT_STATES);
 
 	free(lastS);
 }

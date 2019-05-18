@@ -5,14 +5,14 @@
 unsigned long width;
 unsigned long height;
 
-char* load_pbm_image(char* filename) {
+int* load_pbm_image(char* filename) {
 	FILE* pImageFile;
 
 	char* header;
 	char* character;
-	char* pattern;
 	char* pWidthString;
 	char* pHeightString;
+	int* pattern;
 
 	size_t patternSize;
 	size_t widthLength;
@@ -86,27 +86,28 @@ char* load_pbm_image(char* filename) {
 	// Null terminating string
 	pHeightString[heightLength] = 0;
 
-	// Read Data
-	patternSize = 0;
-	pattern = NULL;
-
-	while (fread(character, 1, 1, pImageFile) == 1) {
-		if (*character == '0' || *character == '1') {
-			patternSize++;
-			pattern = (char*) realloc(pattern, patternSize);
-			pattern[patternSize - 1] = *character;
-		}
-	}
-
+	// Convert width & height
 	width = strtoul(pWidthString, NULL, 10);
 	height = strtoul(pHeightString, NULL, 10);
 
+	// Read Data
+	patternSize = 0;
+	pattern = (int*) malloc(width * height * sizeof(int));
+
+	while (fread(character, 1, 1, pImageFile) == 1) {
+		// Converts 0 or 1 to -1 or +1
+		if (*character == '0') {
+			pattern[patternSize] = -1;
+			patternSize++;
+		}
+		else if (*character == '1') {
+			pattern[patternSize] = 1;
+			patternSize++;
+		}
+	}
+
 	// Make sure the parsing worked otherwise return NULL
 	if (patternSize == width * height) {
-		for (index = 0; index < patternSize; index++) {
-			pattern[index] = pattern[index] == '1' ? 1 : -1;
-		}
-
 		return pattern;
 	} else {
 		fprintf(stderr, "Error: wrong data size in image file \'%s\'.\n", filename);
@@ -114,12 +115,12 @@ char* load_pbm_image(char* filename) {
 	}
 }
 
-void save_pbm_image(char* filename, char* pixels) {
+void save_pbm_image(char* filename, int* pixels) {
 	FILE* pFile;
 	unsigned long index;
 	unsigned long i;
 	unsigned long j;
-	char binaryPixel;
+	int binaryPixel;
 
 	// Create PBM image file
 	pFile = fopen(filename, "w");
@@ -132,10 +133,10 @@ void save_pbm_image(char* filename, char* pixels) {
 		for (i = 0; i < width; i++) {
 			index = j * height + i;
 
-			binaryPixel = pixels[index] == 1 ? '1' : '0';
+			binaryPixel = pixels[index] == 1 ? 1 : -1;
 
 			// Write each binary pixel to PBM file
-			fprintf(pFile, "%c ", binaryPixel);
+			fprintf(pFile, "%d ", binaryPixel);
 		}
 
 		fprintf(pFile, "\n");
