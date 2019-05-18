@@ -13,6 +13,10 @@
 #define RETRIEVE 1
 #define STORE_AND_RETRIEVE 2
 
+// Network state comparison values
+#define EQUAL_STATES 0
+#define DIFFERENT_STATES 1
+
 int executionMode;
 unsigned long nNeurons;
 int trainingSetSize;
@@ -23,6 +27,16 @@ char** pTrainingSet;
 
 int sgn(double value) {
 	return value < 0 ? -1 : 1;
+}
+
+int compare_states(char* s0, char* s1) {
+	unsigned long index;
+
+	for (index = 0; index < nNeurons; index++)
+		if (s0 != s1)
+			return DIFFERENT_STATES;
+
+	return EQUAL_STATES;
 }
 
 void input_network_parameters(FILE* pSettingsFile) {
