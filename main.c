@@ -33,7 +33,7 @@ int compare_states(int* s0, int* s1) {
 	unsigned long index;
 
 	for (index = 0; index < nNeurons; index++)
-		if (s0 != s1)
+		if (s0[index] != s1[index])
 			return DIFFERENT_STATES;
 
 	return EQUAL_STATES;
