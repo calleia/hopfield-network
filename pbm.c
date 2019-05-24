@@ -133,7 +133,7 @@ void save_pbm_image(char* filename, int* pixels) {
 		for (i = 0; i < width; i++) {
 			index = j * height + i;
 
-			binaryPixel = pixels[index] == 1 ? 1 : -1;
+			binaryPixel = pixels[index] == 1 ? 1 : 0;
 
 			// Write each binary pixel to PBM file
 			fprintf(pFile, "%d ", binaryPixel);
