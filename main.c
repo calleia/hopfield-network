@@ -25,6 +25,14 @@ float* w;
 int* s;
 int** pTrainingSet;
 
+void check_memory_allocation(void* pPointer, char* pPointerName, char* pFunctionName) {
+	if (pPointer == NULL) {
+		fprintf(stderr, "Error: could not allocate memory for pointer \'%s\' in function \'%s\'.\n", pPointerName, pFunctionName);
+
+		exit(0);
+	}
+}
+
 int sgn(double value) {
 	return value < 0 ? -1 : 1;
 }
@@ -58,8 +66,10 @@ void input_stored_patterns(FILE* pSettingsFile) {
 	totalSize = trainingSetSize * nNeurons;
 
 	pTrainingSet = (int**) malloc(totalSize * sizeof(int*));
+	check_memory_allocation(pTrainingSet, "pTrainingSet", "input_stored_patterns()");
 
 	pInputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char*));
+	check_memory_allocation(pInputFilename, "pInputFilename", "input_stored_patterns()");
 
 	int i;
 	for (i = 0; i < trainingSetSize; i++) {
@@ -101,6 +111,7 @@ void store_weights(char* filename) {
 
 	// Create weights file
 	pFile = fopen(filename, "w");
+	check_memory_allocation(pFile, "pFile", "store_weights()");
 
 	// Write the network size in the weights file
 	fprintf(pFile, "%lu\n", nNeurons);
@@ -130,15 +141,16 @@ void input_weights(char* pFilename) {
 
 	totalWeightCount = nNeurons * nNeurons;
 	w = (float*) calloc(totalWeightCount, sizeof(float));
-	//check_memory_allocation()
+	check_memory_allocation(w, "w", "input_weights()");
 
 	pWeight = malloc(sizeof(float));
-	//check_memory_allocation(pWeight, "pWeight", "load_full_model()");
+	check_memory_allocation(pWeight, "pWeight", "input_weights()");
 
 	pModelSize = malloc(sizeof(unsigned long));
-	//check_memory_allocation(pModelSize, "pModelSize", "load_full_model()");
+	check_memory_allocation(pModelSize, "pModelSize", "input_weights()");
 
 	pFile = fopen(pFilename, "r");
+	check_memory_allocation(pFile, "pFile", "input_weights()");
 
 	// Read model size from file (total weight count == size^2)
 	if (fscanf(pFile, "%ld", pModelSize) == EOF) {
@@ -176,6 +188,8 @@ void input_initial_network_state(FILE* pSettingsFile) {
 	char* pInputFilename;
 
 	pInputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char*));
+	check_memory_allocation(pInputFilename, "pInputFilename", "input_initial_network_state()");
+
 	fscanf(pSettingsFile, "%*s %s", pInputFilename);
 	s = load_pbm_image(pInputFilename);
 
@@ -190,6 +204,7 @@ void retrieve_stored_pattern() {
 	double h;
 
 	lastS = (int*) malloc(nNeurons * sizeof(int));
+	check_memory_allocation(lastS, "lastS", "retrieve_stored_pattern()");
 
 	do {
 		// Create a copy of the network state s
@@ -215,6 +230,8 @@ void output_stored_pattern(FILE* pSettingsFile) {
 	char* pOutputFilename;
 
 	pOutputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
+	check_memory_allocation(pOutputFilename, "pOutputFilename", "output_stored_pattern()");
+
 	fscanf(pSettingsFile, "%*s\t%s", pOutputFilename);
 	save_pbm_image(pOutputFilename, s);
 
@@ -224,6 +241,7 @@ void output_stored_pattern(FILE* pSettingsFile) {
 int main(int argc, char** argv) {
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
+	check_memory_allocation(pSettingsFile, "pSettingsFile", "main()");
 
 	// Input network parameters
 	input_network_parameters(pSettingsFile);
