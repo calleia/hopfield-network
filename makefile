@@ -2,7 +2,7 @@ CC = gcc
 DEPS = pbm.h rng.h
 TEMPDIR = temp
 
-_OBJS = main.o pbm.o rng.o
+_OBJS = hopfield.o pbm.o rng.o
 OBJS = $(patsubst %, $(TEMPDIR)/%, $(_OBJS))
 
 $(TEMPDIR)/%.o: %.c $(DEPS)
