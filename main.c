@@ -57,6 +57,9 @@ void input_network_parameters(FILE* pSettingsFile) {
 }
 
 void input_stored_patterns(FILE* pSettingsFile) {
+	void check_memory_allocation();
+	int* load_pbm_image();
+
 	unsigned long totalSize;
 	char* pInputFilename;
 	int* pInputPattern;
@@ -80,6 +83,8 @@ void input_stored_patterns(FILE* pSettingsFile) {
 }
 
 void calculate_weights() {
+	void check_memory_allocation();
+
 	unsigned long i;
 	unsigned long j;
 	unsigned long k;
@@ -88,6 +93,7 @@ void calculate_weights() {
 	weightCount = nNeurons * nNeurons;
 
 	w = (float*) calloc(weightCount, sizeof(float));
+	check_memory_allocation(w, "w", "calculate_weights()");
 
 	for (k = 0; k < trainingSetSize; k++) {
 		for (j = 0; j < nNeurons; j++) {
@@ -104,6 +110,8 @@ void calculate_weights() {
 }
 
 void store_weights(char* filename) {
+	void check_memory_allocation();
+
 	FILE* pFile;
 	unsigned long i;
 	unsigned long j;
@@ -133,6 +141,8 @@ void store_weights(char* filename) {
 }
 
 void input_weights(char* pFilename) {
+	void check_memory_allocation();
+
 	FILE* pFile;
 	float* pWeight;
 	unsigned long* pModelSize;
@@ -185,6 +195,9 @@ void input_weights(char* pFilename) {
 }
 
 void input_initial_network_state(FILE* pSettingsFile) {
+	void check_memory_allocation();
+	int* load_pbm_image();
+
 	char* pInputFilename;
 
 	pInputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char*));
@@ -197,6 +210,9 @@ void input_initial_network_state(FILE* pSettingsFile) {
 }
 
 void retrieve_stored_pattern() {
+	void check_memory_allocation();
+	int compare_states();
+
 	int* lastS;
 	int i;
 	int j;
@@ -227,6 +243,9 @@ void retrieve_stored_pattern() {
 }
 
 void output_stored_pattern(FILE* pSettingsFile) {
+	void check_memory_allocation();
+	void save_pbm_image();
+
 	char* pOutputFilename;
 
 	pOutputFilename = (char*) malloc(MAX_FILENAME_LENGTH * sizeof(char));
@@ -239,9 +258,18 @@ void output_stored_pattern(FILE* pSettingsFile) {
 }
 
 int main(int argc, char** argv) {
+	void check_memory_allocation();
+	void input_network_parameters();
+	void input_stored_patterns();
+	void calculate_weights();
+	void store_weights();
+	void input_weights();
+	void input_initial_network_state();
+	void retrieve_stored_pattern();
+	void output_stored_pattern();
+
 	FILE* pSettingsFile;
 	pSettingsFile = fopen(SETTINGS_FILENAME, "r");
-	check_memory_allocation(pSettingsFile, "pSettingsFile", "main()");
 
 	// Input network parameters
 	input_network_parameters(pSettingsFile);
