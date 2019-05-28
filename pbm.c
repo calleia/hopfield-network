@@ -131,7 +131,7 @@ void save_pbm_image(char* filename, int* pixels) {
 	// Write image data to PBM file
 	for (j = 0; j < height; j++) {
 		for (i = 0; i < width; i++) {
-			index = j * height + i;
+			index = j * width + i;
 
 			binaryPixel = pixels[index] == 1 ? 1 : 0;
 
