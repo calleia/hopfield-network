@@ -17,6 +17,9 @@
 #define EQUAL_STATES 0
 #define DIFFERENT_STATES 1
 
+// Replaces indexes by single index
+#define w(i, j) w[j * nNeurons + i]
+
 int executionMode;
 unsigned long nNeurons;
 int trainingSetSize;
@@ -99,7 +102,7 @@ void calculate_weights() {
 		for (j = 0; j < nNeurons; j++) {
 			for (i = 0; i < nNeurons; i++) {
 				if (i != j)
-					w[j * nNeurons + i] += pTrainingSet[k][i] * pTrainingSet[k][j];
+					w(i, j) += pTrainingSet[k][i] * pTrainingSet[k][j];
 			}
 		}
 	}
@@ -115,7 +118,6 @@ void store_weights(char* filename) {
 	FILE* pFile;
 	unsigned long i;
 	unsigned long j;
-	unsigned long index;
 
 	// Create weights file
 	pFile = fopen(filename, "w");
@@ -127,11 +129,8 @@ void store_weights(char* filename) {
 	// Save the whole square matrix of weights
 	for (j = 0; j < nNeurons; j++) {
 		for (i = 0; i < nNeurons; i++) {
-			// Calculate current weight index
-			index = j * nNeurons + i;
-
 			// Write current weight in the model file
-			fprintf(pFile, "%.6f\t", w[index]);
+			fprintf(pFile, "%.6f\t", w(i, j));
 		}
 
 		fprintf(pFile, "\n");
@@ -216,7 +215,6 @@ void retrieve_stored_pattern() {
 	int* lastS;
 	int i;
 	int j;
-	int index;
 	double h;
 
 	lastS = (int*) malloc(nNeurons * sizeof(int));
@@ -231,8 +229,7 @@ void retrieve_stored_pattern() {
 			h = 0.0;
 
 			for (i = 0; i < nNeurons; i++) {
-				index = j * nNeurons + i;
-				h += w[index] * s[i];
+				h += w(i, j) * s[i];
 			}
 
 			s[j] = sgn(h);
