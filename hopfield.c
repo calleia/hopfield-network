@@ -17,14 +17,11 @@
 #define EQUAL_STATES 0
 #define DIFFERENT_STATES 1
 
-// Replaces indexes by single index
-#define w(i, j) w[j * nNeurons + i]
-
 int executionMode;
 unsigned long nNeurons;
 int trainingSetSize;
 
-float* w;
+float** w;
 int* s;
 int** pTrainingSet;
 
@@ -91,24 +88,28 @@ void calculate_weights() {
 	unsigned long i;
 	unsigned long j;
 	unsigned long k;
-	unsigned long weightCount;
 
-	weightCount = nNeurons * nNeurons;
-
-	w = (float*) calloc(weightCount, sizeof(float));
+	w = (float**) malloc(nNeurons * sizeof(float*));
 	check_memory_allocation(w, "w", "calculate_weights()");
 
+	for (i = 0; i < nNeurons; i++) {
+		w[i] = (float*) calloc(nNeurons, sizeof(float));
+		check_memory_allocation(w[i], "w[i]", "calculate_weights()");
+	}
+
 	for (k = 0; k < trainingSetSize; k++) {
-		for (j = 0; j < nNeurons; j++) {
-			for (i = 0; i < nNeurons; i++) {
+		for (i = 0; i < nNeurons; i++) {
+			for (j = 0; j < nNeurons; j++) {
 				if (i != j)
-					w(i, j) += pTrainingSet[k][i] * pTrainingSet[k][j];
+					w[i][j] += pTrainingSet[k][i] * pTrainingSet[k][j];
 			}
 		}
 	}
 
-	for (i = 0; i < weightCount; i++) {
-		w[i] = w[i] / (float) nNeurons;
+	for (i = 0; i < nNeurons; i++) {
+		for (j = 0; j < nNeurons; j++) {
+			w[i][j] = w[i][j] / (float) nNeurons;
+		}
 	}
 }
 
@@ -127,10 +128,10 @@ void store_weights(char* filename) {
 	fprintf(pFile, "%lu\n", nNeurons);
 
 	// Save the whole square matrix of weights
-	for (j = 0; j < nNeurons; j++) {
-		for (i = 0; i < nNeurons; i++) {
+	for (i = 0; i < nNeurons; i++) {
+		for (j = 0; j < nNeurons; j++) {
 			// Write current weight in the model file
-			fprintf(pFile, "%.6f\t", w(i, j));
+			fprintf(pFile, "%.6f\t", w[i][j]);
 		}
 
 		fprintf(pFile, "\n");
@@ -147,10 +148,16 @@ void input_weights(char* pFilename) {
 	unsigned long* pModelSize;
 	unsigned long weightCount;
 	unsigned long totalWeightCount;
+	unsigned long i;
+	unsigned long j;
 
-	totalWeightCount = nNeurons * nNeurons;
-	w = (float*) calloc(totalWeightCount, sizeof(float));
+	w = (float**) malloc(nNeurons * sizeof(float*));
 	check_memory_allocation(w, "w", "input_weights()");
+
+	for (i = 0; i < nNeurons; i++) {
+		w[i] = (float*) calloc(nNeurons, sizeof(float));
+		check_memory_allocation(w[i], "w[i]", "input_weights()");
+	}
 
 	pWeight = malloc(sizeof(float));
 	check_memory_allocation(pWeight, "pWeight", "input_weights()");
@@ -179,9 +186,15 @@ void input_weights(char* pFilename) {
 			break;
 		}
 
-		w[weightCount] = *pWeight;
+		// Calculate weight matrix indexes
+		i = weightCount / nNeurons;
+		j = weightCount % nNeurons;
+		
+		w[i][j] = *pWeight;
 		weightCount++;
 	}
+
+	totalWeightCount = nNeurons * nNeurons;
 
 	if (weightCount != totalWeightCount) {
 		fprintf(stderr, "%s\n", "Model file has an invalid number of weights.");
@@ -225,14 +238,14 @@ void retrieve_stored_pattern() {
 		for (i = 0; i < nNeurons; i++)
 			lastS[i] = s[i];
 
-		for (j = 0; j < nNeurons; j++) {
+		for (i = 0; i < nNeurons; i++) {
 			h = 0.0;
 
-			for (i = 0; i < nNeurons; i++) {
-				h += w(i, j) * s[i];
+			for (j = 0; j < nNeurons; j++) {
+				h += w[i][j] * s[j];
 			}
 
-			s[j] = sgn(h);
+			s[i] = sgn(h);
 		}
 	} while (compare_states(s, lastS) == DIFFERENT_STATES);
 
