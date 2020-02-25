@@ -3,6 +3,7 @@
 #include <string.h>
 #include <getopt.h>
 #include "pbm.h"
+#include "rng.h"
 
 #define MAX_FILENAME_LENGTH 1024
 #define SETTINGS_FILENAME "settings.tsv"
@@ -245,6 +246,41 @@ void retrieve_stored_pattern() {
 			}
 
 			s[i] = sgn(h);
+		}
+	} while (compare_states(s, lastS) == DIFFERENT_STATES);
+
+	free(lastS);
+}
+
+void retrieve_stored_pattern_asynchronous() {
+	void check_memory_allocation();
+	int compare_states();
+	int* get_random_sequence(int size);
+
+	int* lastS;
+	int* order;
+	int i;
+	int j;
+	double h;
+
+	lastS = (int*) malloc(nNeurons * sizeof(int));
+	check_memory_allocation(lastS, "lastS", "retrieve_stored_pattern_asynchronous()");
+	
+	do {
+		// Create a copy of the network state s
+		for (i = 0; i < nNeurons; i++)
+			lastS[i] = s[i];
+
+		order = get_random_sequence(nNeurons);
+
+		for (i = 0; i < nNeurons; i++) {
+			h = 0.0;
+
+			for (j = 0; j < nNeurons; j++) {
+				h += w[order[i]][order[j]] * s[order[j]];
+			}
+
+			s[order[i]] = sgn(h);
 		}
 	} while (compare_states(s, lastS) == DIFFERENT_STATES);
 
