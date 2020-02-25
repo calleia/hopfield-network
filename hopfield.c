@@ -11,7 +11,6 @@
 // Execution modes
 #define STORE 0
 #define RETRIEVE 1
-#define STORE_AND_RETRIEVE 2
 
 // Network state comparison values
 #define EQUAL_STATES 0
@@ -284,7 +283,7 @@ int main(int argc, char** argv) {
 	// Input network parameters
 	input_network_parameters(pSettingsFile);
 
-	if (executionMode == STORE || executionMode == STORE_AND_RETRIEVE) {
+	if (executionMode == STORE) {
 		// Input stored patterns
 		input_stored_patterns(pSettingsFile);
 
@@ -293,14 +292,10 @@ int main(int argc, char** argv) {
 
 		// Store weights
 		store_weights(WEIGHTS_FILENAME);
-	}
-
-	if (executionMode == RETRIEVE) {
+	} else if (executionMode == RETRIEVE) {
 		// Input weights
 		input_weights(WEIGHTS_FILENAME);
-	}
-
-	if (executionMode == RETRIEVE || executionMode == STORE_AND_RETRIEVE) {
+		
 		// Input initial network state
 		input_initial_network_state(pSettingsFile);
 
