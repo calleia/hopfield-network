@@ -251,6 +251,22 @@ void retrieve_stored_pattern() {
 	free(lastS);
 }
 
+double measure_energy() {
+	int i;
+	int j;
+	double h;
+
+	h = 0;
+
+	for (i = 0; i < nNeurons; i++) {
+		for (j = 0; j < nNeurons; j++) {
+			h += w[i][j]  * s[i]  * s[j];
+		}
+	}
+
+	return -1/2 * h;
+}
+
 void output_stored_pattern(FILE* pSettingsFile) {
 	void check_memory_allocation();
 	void save_pbm_image();
@@ -295,7 +311,7 @@ int main(int argc, char** argv) {
 	} else if (executionMode == RETRIEVE) {
 		// Input weights
 		input_weights(WEIGHTS_FILENAME);
-		
+
 		// Input initial network state
 		input_initial_network_state(pSettingsFile);
 
