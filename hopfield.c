@@ -12,6 +12,7 @@
 // Execution modes
 #define STORE 0
 #define RETRIEVE 1
+#define RETRIEVE_ASYNC 2
 
 // Network state comparison values
 #define EQUAL_STATES 0
@@ -322,6 +323,7 @@ int main(int argc, char** argv) {
 	void check_memory_allocation();
 	void input_network_parameters();
 	void input_stored_patterns();
+	void retrieve_stored_pattern_asynchronous();
 	void calculate_weights();
 	void store_weights();
 	void input_weights();
@@ -344,7 +346,7 @@ int main(int argc, char** argv) {
 
 		// Store weights
 		store_weights(WEIGHTS_FILENAME);
-	} else if (executionMode == RETRIEVE) {
+	} else if (executionMode == RETRIEVE || executionMode == RETRIEVE_ASYNC) {
 		// Input weights
 		input_weights(WEIGHTS_FILENAME);
 
@@ -352,7 +354,11 @@ int main(int argc, char** argv) {
 		input_initial_network_state(pSettingsFile);
 
 		// Retrieve stored pattern
-		retrieve_stored_pattern();
+		if (executionMode == RETRIEVE) {
+			retrieve_stored_pattern();
+		} else if (executionMode == RETRIEVE_ASYNC) {
+			retrieve_stored_pattern_asynchronous();
+		}
 
 		// Output stored pattern
 		output_stored_pattern(pSettingsFile);
