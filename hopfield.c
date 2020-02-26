@@ -301,7 +301,7 @@ double measure_energy() {
 		}
 	}
 
-	return -1/2 * h;
+	return -1.0 / 2.0 * h;
 }
 
 void output_stored_pattern(FILE* pSettingsFile) {
