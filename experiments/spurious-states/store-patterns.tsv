@@ -1,0 +1,6 @@
+EXECUTION_MODE	0
+N_NEURONS	1024
+TRAINING_SET_SIZE	3
+INPUT_FILENAME	patterns/32x32/clear/3.pbm
+INPUT_FILENAME	patterns/32x32/clear/8.pbm
+INPUT_FILENAME	patterns/32x32/clear/9.pbm

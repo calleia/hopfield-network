@@ -6,6 +6,7 @@
 echo "build started"
 
 make clean
+
 make
 
 echo "build finished"
@@ -15,14 +16,7 @@ echo "build finished"
 
 echo "model training started"
 
-settings="EXECUTION_MODE	0\n
-N_NEURONS	65536\n
-TRAINING_SET_SIZE	3\n
-INPUT_FILENAME	patterns/pictures/clear/cristo-redentor.pbm\n
-INPUT_FILENAME	patterns/pictures/clear/maracana.pbm\n
-INPUT_FILENAME	patterns/pictures/clear/uerj.pbm\n"
-
-echo $settings > settings.tsv
+cp experiments/pictures/store-patterns.tsv settings.tsv
 
 ./hopfield
 
@@ -33,12 +27,7 @@ echo "model training finished (weights generated)"
 
 echo "pattern cristo-redentor retrieval started"
 
-settings="EXECUTION_MODE	1\n
-N_NEURONS	65536\n
-INITIAL_NETWORK_STATE	patterns/pictures/noisy/cristo-redentor.pbm\n
-RETRIEVED_IMAGE_FILENAME	experiments/pictures/output/retrieved-cristo-redentor.pbm"
-
-echo $settings > settings.tsv
+cp experiments/pictures/retrieve-cristo-redentor.tsv settings.tsv
 
 ./hopfield
 
@@ -49,12 +38,7 @@ echo "pattern cristo-redentor retrieval finished"
 
 echo "pattern maracana retrieval started"
 
-settings="EXECUTION_MODE	1\n
-N_NEURONS	65536\n
-INITIAL_NETWORK_STATE	patterns/pictures/noisy/maracana.pbm\n
-RETRIEVED_IMAGE_FILENAME	experiments/pictures/output/retrieved-maracana.pbm"
-
-echo $settings > settings.tsv
+cp experiments/pictures/retrieve-maracana.tsv settings.tsv
 
 ./hopfield
 
@@ -65,12 +49,7 @@ echo "pattern maracana retrieval finished"
 
 echo "pattern uerj retrieval started"
 
-settings="EXECUTION_MODE	1\n
-N_NEURONS	65536\n
-INITIAL_NETWORK_STATE	patterns/pictures/noisy/uerj.pbm\n
-RETRIEVED_IMAGE_FILENAME	experiments/pictures/output/retrieved-uerj.pbm"
-
-echo $settings > settings.tsv
+cp experiments/pictures/retrieve-uerj.tsv settings.tsv
 
 ./hopfield
 

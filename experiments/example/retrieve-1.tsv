@@ -1,0 +1,4 @@
+EXECUTION_MODE	1
+N_NEURONS	1024
+INITIAL_NETWORK_STATE	patterns/32x32/noisy/1.pbm
+RETRIEVED_IMAGE_FILENAME	experiments/example/output/retrieved-1.pbm
