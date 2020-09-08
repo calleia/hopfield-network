@@ -1,10 +1,18 @@
 #ifndef RNG_H_
 #define RNG_H_
 
-void set_random_seed();
+/*
+****************************************************************************
 
-int get_random_int(int max);
+            Random Number Generator
+              Version 1.0,  Jan. 13, 1992
+              From Numerical Recipies in C
 
-int* get_random_sequence(int size);
+        Generates random number in interval [0, 1].
+
+****************************************************************************
+*/
+
+float ran3(long *idum);
 
 #endif

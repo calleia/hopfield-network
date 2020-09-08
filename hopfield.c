@@ -26,6 +26,8 @@ float** w;
 int* s;
 int** pTrainingSet;
 
+long iseed = -17841;
+
 void check_memory_allocation(void* pPointer, char* pPointerName, char* pFunctionName) {
 	if (pPointer == NULL) {
 		fprintf(stderr, "Error: could not allocate memory for pointer \'%s\' in function \'%s\'.\n", pPointerName, pFunctionName);
@@ -317,6 +319,31 @@ void output_stored_pattern(FILE* pSettingsFile) {
 	save_pbm_image(pOutputFilename, s);
 
 	free(pOutputFilename);
+}
+
+// Generates randomly ordered sequence
+int* get_random_sequence(int size) {
+    int i;
+    int j;
+    int* pSequence;
+
+    // Create ordered sequence with n elements (indices in interval [0, n-1])
+    pSequence = malloc(size * sizeof(int));
+
+    for (i = 0; i < size; i++) {
+        pSequence[i] = i;
+    }
+    
+    // Fisher–Yates/Knuth shuffle: shuffle an array a of n elements (indices in interval [0, n-1])
+    for (i = size - 1; i > 0; i--) {
+        j = (int) (ran3(&iseed) * i);
+        
+        int aux = pSequence[i];
+        pSequence[i] = pSequence[j];
+        pSequence[j] = aux;
+    }
+    
+    return pSequence;
 }
 
 int main(int argc, char** argv) {
