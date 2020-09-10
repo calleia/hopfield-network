@@ -12,7 +12,6 @@
 // Execution modes
 #define STORE 0
 #define RETRIEVE 1
-#define RETRIEVE_ASYNC 2
 
 // Network state comparison values
 #define EQUAL_STATES 0
@@ -227,37 +226,6 @@ void input_initial_network_state(FILE* pSettingsFile) {
 void retrieve_stored_pattern() {
 	void check_memory_allocation();
 	int compare_states();
-
-	int* lastS;
-	int i;
-	int j;
-	double h;
-
-	lastS = (int*) malloc(nNeurons * sizeof(int));
-	check_memory_allocation(lastS, "lastS", "retrieve_stored_pattern()");
-
-	do {
-		// Create a copy of the network state s
-		for (i = 0; i < nNeurons; i++)
-			lastS[i] = s[i];
-
-		for (i = 0; i < nNeurons; i++) {
-			h = 0.0;
-
-			for (j = 0; j < nNeurons; j++) {
-				h += w[i][j] * s[j];
-			}
-
-			s[i] = sgn(h);
-		}
-	} while (compare_states(s, lastS) == DIFFERENT_STATES);
-
-	free(lastS);
-}
-
-void retrieve_stored_pattern_asynchronous() {
-	void check_memory_allocation();
-	int compare_states();
 	int* get_random_sequence(int size);
 
 	int* lastS;
@@ -267,7 +235,7 @@ void retrieve_stored_pattern_asynchronous() {
 	double h;
 
 	lastS = (int*) malloc(nNeurons * sizeof(int));
-	check_memory_allocation(lastS, "lastS", "retrieve_stored_pattern_asynchronous()");
+	check_memory_allocation(lastS, "lastS", "retrieve_stored_pattern()");
 	
 	do {
 		// Create a copy of the network state s
@@ -350,7 +318,6 @@ int main(int argc, char** argv) {
 	void check_memory_allocation();
 	void input_network_parameters();
 	void input_stored_patterns();
-	void retrieve_stored_pattern_asynchronous();
 	void calculate_weights();
 	void store_weights();
 	void input_weights();
@@ -373,7 +340,7 @@ int main(int argc, char** argv) {
 
 		// Store weights
 		store_weights(WEIGHTS_FILENAME);
-	} else if (executionMode == RETRIEVE || executionMode == RETRIEVE_ASYNC) {
+	} else if (executionMode == RETRIEVE) {
 		// Input weights
 		input_weights(WEIGHTS_FILENAME);
 
@@ -381,11 +348,7 @@ int main(int argc, char** argv) {
 		input_initial_network_state(pSettingsFile);
 
 		// Retrieve stored pattern
-		if (executionMode == RETRIEVE) {
-			retrieve_stored_pattern();
-		} else if (executionMode == RETRIEVE_ASYNC) {
-			retrieve_stored_pattern_asynchronous();
-		}
+		retrieve_stored_pattern();
 
 		// Output stored pattern
 		output_stored_pattern(pSettingsFile);
