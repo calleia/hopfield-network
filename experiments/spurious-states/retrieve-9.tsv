@@ -1,0 +1,4 @@
+EXECUTION_MODE	1
+N_NEURONS	1024
+INITIAL_NETWORK_STATE	patterns/32x32/clear/9.pbm
+RETRIEVED_IMAGE_FILENAME	experiments/spurious-states/output/retrieved-9.pbm

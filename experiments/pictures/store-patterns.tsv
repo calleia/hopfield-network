@@ -1,0 +1,6 @@
+EXECUTION_MODE	0
+N_NEURONS	65536
+TRAINING_SET_SIZE	3
+INPUT_FILENAME	patterns/pictures/clear/cristo-redentor.pbm
+INPUT_FILENAME	patterns/pictures/clear/maracana.pbm
+INPUT_FILENAME	patterns/pictures/clear/uerj.pbm
